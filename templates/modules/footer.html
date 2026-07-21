@@ -1,0 +1,27 @@
+<div class="flex w-full flex-col items-center justify-center">
+  <div class="my-10 w-2/3 border-t border-dashed border-black/10 transition dark:border-white/15"></div>
+  <div class="mb-12 flex flex-col items-center justify-center rounded-2xl border-dashed border-[oklch(85%_0.01_var(--hue))] px-6 transition dark:border-white/15">
+    <div class="text-50 text-center text-sm transition !delay-0">
+      &copy;
+      <span id="copyright-year">{{ .CurrentYear }}</span>
+      {{ .Site.Title }}. All Rights Reserved. /
+      <a class="link font-medium text-[var(--primary)] transition" target="_blank" href="/rss.xml">RSS</a> /
+      <a class="link font-medium text-[var(--primary)]" target="_blank" href="/sitemap.xml">Sitemap</a><br />
+      Powered by
+      <a class="link font-medium text-[var(--primary)]" target="_blank" href="https://github.com/openolah/openolah">OpenOlah</a> &
+      <a class="link font-medium text-[var(--primary)]" target="_blank" href="https://github.com/jiewenhuang/halo-theme-fuwari">Theme-Fuwari</a>
+      <br />
+      <div>
+        {{ if .Site.ICP }}
+        <a class="hover:underline" target="_blank" href="{{ .Site.ICPLink }}">{{ .Site.ICP }}</a>
+        {{ end }}
+        {{ if .Site.GonganBeian }}
+        <p class="flex items-center justify-center gap-1">
+          <img src="{{ asset "images/gongan_beian.png" }}" class="size-4" alt="gongan_beian">
+          <a href="{{ .Site.GonganBeianLink }}" class="hover:underline" target="_blank">{{ .Site.GonganBeian }}</a>
+        </p>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</div>

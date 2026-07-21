@@ -1,0 +1,22 @@
+<div data-id="tags" x-data="{ isCollapsed: true }" x-init="isCollapsed = {{ if ge (len .Tags) 20 }}true{{ else }}false{{ end }}" class="card-base onload-animation pb-4" style="animation-delay: 200ms; --collapsedHeight: 7.5rem">
+    <div class="relative mb-2 ml-8 mt-4 text-lg font-bold text-neutral-900 transition before:absolute before:left-[-16px] before:top-[5.5px] before:h-4 before:w-1 before:rounded-md before:bg-[var(--primary)] dark:text-neutral-100" style="--collapsedHeight: 7.5rem">
+        标签
+    </div>
+    <div id="tags" class="collapse-wrapper overflow-hidden px-4" :class="isCollapsed ? 'collapsed' : ''" style="--collapsedHeight: 7.5rem">
+        <div class="flex flex-wrap gap-2">
+            {{ range .Tags }}
+            <a href="{{ .Status.Permalink }}" aria-label="View all posts with the {{ .Spec.DisplayName }} tag" class="btn-regular h-8 rounded-lg px-3 text-sm">{{ .Spec.DisplayName }}</a>
+            {{ end }}
+        </div>
+    </div>
+    {{ if ge (len .Tags) 20 }}
+    <div class="expand-btn -mb-2 px-4">
+        <button class="btn-plain h-9 w-full rounded-lg" @click="isCollapsed = ! isCollapsed">
+            <div class="flex -translate-x-2 items-center justify-center gap-2 text-[var(--primary)]">
+                <span class="icon-[material-symbols--more-horiz] text-[1.75rem]"></span>
+                更多
+            </div>
+        </button>
+    </div>
+    {{ end }}
+</div>

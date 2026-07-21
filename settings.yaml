@@ -1,0 +1,355 @@
+apiVersion: v1alpha1
+kind: Setting
+metadata:
+  name: theme-fuwari-setting
+spec:
+  forms:
+    - group: base
+      label: 基础设置
+      formSchema:
+        - $formkit: group
+          name: themeColor
+          label: 主题颜色
+          value:
+            hue: 250
+            fixed: false
+          children:
+            - $formkit: number
+              name: hue
+              min: 0
+              max: 360
+              step: 5
+              label: 色调(Halo表单好像目前不支持 colorpicker)
+              value: 250
+              help: "主题颜色的默认色调，从0到360。红色：0，蓝绿色：200，青色：250，粉红色：345"
+            - $formkit: checkbox
+              name: fixed
+              label: 固定色调
+              value: false
+              help: "隐藏访问者的主题彩色选择器"
+        - $formkit: group
+          name: banner
+          label: Banner
+          value:
+            enable: true
+            src: "/themes/theme-fuwari/assets/images/demo-banner.png"
+            position: "center"
+            credit:
+              enable: false
+              text: "© 2022 Fuwari"
+              url: ""
+          children:
+            - $formkit: checkbox
+              name: enable
+              label: 启用
+              value: true
+              help: "启用横幅"
+            - $formkit: attachment
+              name: src
+              label: 图片
+              value: "/themes/theme-fuwari/assets/images/demo-banner.png"
+              help: "显示的图像"
+            - $formkit: select
+              name: position
+              label: 位置
+              value: "center"
+              options:
+                - value: center
+                  label: 居中
+                - value: top
+                  label: 顶部
+                - value: bottom
+                  label: 底部
+            - $formkit: group
+              name: credit
+              label: 版权信息
+              children:
+                - $formkit: checkbox
+                  name: enable
+                  label: 启用
+                  value: false
+                  help: "启用版权信息"
+                - $formkit: text
+                  name: text
+                  label: 文字
+                  value: "© 2022 Fuwari"
+                  help: "显示的文字"
+                - $formkit: url
+                  name: url
+                  label: 链接
+                  value:
+        - $formkit: group
+          name: toc
+          label: 目录
+          value:
+            enable: false
+            max_depth: 2
+          children:
+            - $formkit: checkbox
+              name: enable
+              label: 启用
+              value: false
+              help: "启用目录"
+            - $formkit: number
+              name: max_depth
+              label: 最大深度
+              value: 2
+              help: "目录的最大深度"
+        - $formkit: menuRadio
+          id: menu
+          name: menu
+          label: 菜单
+          value: ""
+          help: "选择菜单(仅支持一级菜单)"
+    - group: style
+      label: 样式
+      formSchema:
+        - $formkit: select
+          name: color_scheme
+          label: 默认配色
+          value: auto
+          options:
+            - label: 跟随系统
+              value: auto
+            - label: 深色
+              value: dark
+            - label: 浅色
+              value: light
+
+        - $formkit: checkbox
+          name: enable_change_color_scheme
+          label: 允许访客切换配色
+          value: true
+    - group: sidebar
+      label: 侧边栏
+      formSchema:
+        - $formkit: repeater
+          name: widgets
+          label: 小部件
+          value:
+            - value: categories
+            - value: tag
+          children:
+            - $formkit: select
+              name: value
+              id: widgets_value
+              label: 部件
+              options:
+                - label: 热门文章（TODO）
+                  value: popular-posts
+                - label: 文章分类
+                  value: categories
+                - label: 文章标签
+                  value: tag
+                - label: 自定义HTML
+                  value: html
+            - $formkit: code
+              if: $value.value === html
+              name: html
+              label: HTML
+              value: "<p>自定义HTML</p>"
+              language: html
+
+    - group: profile
+      label: 个人设置
+      formSchema:
+        - $formkit: checkbox
+          name: enable_profile
+          value: "true"
+          label: 启用个人设置
+        - $formkit: checkbox
+          name: auto_avatar
+          label: 使用用户头像
+          value: false
+        - $formkit: attachment
+          name: avatar
+          value: /themes/theme-fuwari/assets/images/demo-avatar.png
+          label: 头像
+        - $formkit: checkbox
+          name: auto_name
+          label: 使用用户昵称
+          value: false
+        - $formkit: text
+          name: name
+          label: 昵称
+          value: Fuwari
+        - $formkit: checkbox
+          name: auto_bio
+          label: 使用用户简介
+          value: false
+        - $formkit: text
+          name: bio
+          label: 简介
+          value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        - $formkit: url
+          name: url
+          label: 链接(点击跳转登录和后台可使用 /login )
+          value: /about
+
+        - $formkit: repeater
+          name: social_media
+          label: 社交媒体
+          value:
+            - icon: icon-[mdi--github]
+              url: https://github.com/jiewenhuang
+              text: GitHub
+              url_type: normal
+
+          children:
+            - $formkit: select
+              name: icon
+              label: 图标
+              options:
+                - label: 电子邮箱
+                  value: icon-[tabler--mail-filled]
+                - label: 微信
+                  value: icon-[streamline-logos--wechat-logo-block]
+                - label: 腾讯 QQ
+                  value: icon-[fa6-brands--qq]
+                - label: 新浪微博
+                  value: icon-[simple-icons--sinaweibo]
+                - label: 知乎
+                  value: icon-[ant-design--zhihu-circle-filled]
+                - label: 豆瓣
+                  value: icon-[streamline-logos--douban-logo-block]
+                - label: 哔哩哔哩
+                  value: icon-[streamline-logos--bilibili-logo-block]
+                - label: 抖音 / TikTok
+                  value: icon-[streamline-logos--tiktok-logo-block]
+                - label: Telegram
+                  value: icon-[ic--baseline-telegram]
+                - label: Facebook
+                  value: icon-[ic--baseline-facebook]
+                - label: Instagram
+                  value: icon-[ant-design--instagram-filled]
+                - label: LinkedIn
+                  value: icon-[entypo-social--linkedin-with-circle]
+                - label: Twitter
+                  value: icon-[streamline-logos--x-twitter-logo-block]
+                - label: Slack
+                  value: icon-[ant-design--slack-circle-filled]
+                - label: Discord
+                  value: icon-[ic--baseline-discord]
+                - label: YouTube
+                  value: icon-[entypo-social--youtube-with-circle]
+                - label: Steam
+                  value: icon-[ri--steam-fill]
+                - label: GitHub
+                  value: icon-[mdi--github]
+                - label: GitLab
+                  value: icon-[fa6-brands--square-gitlab]
+                - label: RSS
+                  value: icon-[streamline-plump--rss-square-solid]
+                - label: 自定义
+                  value: custom
+            - $formkit: text
+              name: name
+              label: 名称
+            - $formkit: text
+              if: $value.icon === custom
+              name: custom_icon
+              label: 自定义图标
+              validation: "required"
+              value: ""
+              help: "你可以引入自己的iconfont库，然后这里填写图标的类名，例如：iconfont icon-xxx"
+            - $formkit: text
+              name: url
+              label: 链接
+              validation: "required"
+            - $formkit: select
+              name: url_type
+              label: 链接类型
+              value: normal
+              help: "如果选择了图片类型，那么在访客点击之后会使用弹框的形式加载"
+              options:
+                - label: 跳转链接
+                  value: normal
+                - label: 图片
+                  value: image
+
+    - group: post
+      label: 文章
+      formSchema:
+        - $formkit: group
+          name: license
+          label: 版权声明
+          value:
+            enable: false
+            name: CC BY-NC-SA 4.0
+            url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+          children:
+            - $formkit: checkbox
+              name: enable
+              label: 启用
+              value: false
+              help: "启用版权声明"
+            - $formkit: text
+              name: name
+              label: 名称
+              value: CC BY-NC-SA 4.0
+            - $formkit: url
+              name: url
+              label: 链接
+              value: https://creativecommons.org/licenses/by-nc-sa/4.0/
+        - $formkit: select
+          name: content_size
+          label: 字体大小
+          value: prose-base
+          options:
+            - value: prose-base
+              label: prose-base
+            - value: prose-sm
+              label: prose-sm
+            - value: prose-lg
+              label: prose-lg
+            - value: prose-xl
+              label: prose-xl
+            - value: prose-2xl
+              label: prose-2xl
+        - $formkit: select
+          name: content_theme
+          label: 颜色主题
+          value: prose-gray
+          options:
+            - value: prose-gray
+              label: prose-gray
+            - value: prose-slate
+              label: prose-slate
+            - value: prose-zinc
+              label: prose-zinc
+            - value: prose-neutral
+              label: prose-neutral
+            - value: prose-stone
+              label: prose-stone
+        - $formkit: checkbox
+          name: enable_toc
+          label: 启用目录
+          value: false
+          help: "启用目录"
+    - group: beian
+      label: 备案设置
+      formSchema:
+        - $formkit: text
+          name: icp_text
+          label: ICP备案号
+        - $formkit: text
+          name: icp_link
+          label: ICP备案跳转链接
+          value: https://beian.miit.gov.cn/
+
+        - $formkit: text
+          name: gongan_text
+          label: 公安联网备案号
+        - $formkit: text
+          name: gongan_link
+          label: 公安联网备案跳转链接
+          value: https://beian.mps.gov.cn/#/query/webSearch
+
+    - group: development
+      label: 开发设置
+      formSchema:
+        - $formkit: checkbox
+          name: enabled
+          label: 启用开发模式
+          value: false
+          help: 仅供开发环境使用，开启此设置后，所有静态资源由 Vite 开发服务器提供，所以需要在本地启动 Vite 服务（pnpm dev）

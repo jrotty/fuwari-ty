@@ -1,0 +1,59 @@
+{{ $post := .Post }}
+{{ $tagNameMap := .TagNameMap }}
+<div class="mb-4 flex flex-wrap items-center gap-4 gap-x-4 gap-y-2 text-neutral-500 dark:text-neutral-400">
+    <!-- publish date -->
+    <div class="flex items-center">
+      <div class="meta-icon">
+        <span class="icon-[material-symbols--calendar-today-outline-rounded] text-xl"></span>
+      </div>
+      <span class="text-50 text-sm font-medium">
+        {{ if $post.Spec.PublishTime }}
+          {{ $post.Spec.PublishTime.Format "2006-01-02" }}
+        {{ else if $post.CreatedAt }}
+          {{ $post.CreatedAt.Format "2006-01-02" }}
+        {{ end }}
+      </span>
+    </div>
+
+    <!-- word count -->
+    <div class="flex items-center">
+      <div class="meta-icon">
+        <span class="icon-[material-symbols--article-outline-rounded] text-xl"></span>
+      </div>
+      <span class="text-50 text-sm font-medium">
+        {{ if $post.WordCount }}
+          {{ $post.WordCount }} 字
+        {{ else }}
+          0 字
+        {{ end }}
+      </span>
+    </div>
+
+    <!-- read time -->
+    <div class="flex items-center">
+      <div class="meta-icon">
+        <span class="icon-[material-symbols--schedule-outline-rounded] text-xl"></span>
+      </div>
+      <span class="text-50 text-sm font-medium">
+        {{ if $post.ReadTime }}
+          {{ $post.ReadTime }} 分钟
+        {{ else }}
+          0 分钟
+        {{ end }}
+      </span>
+    </div>
+
+    <!-- tags -->
+    {{ if $post.Spec.Tags }}
+    <div class="flex items-center gap-1.5">
+      <div class="meta-icon">
+        <span class="icon-[material-symbols--label-outline-rounded] text-xl"></span>
+      </div>
+      {{ range $tagName := $post.Spec.Tags }}
+        {{ $displayName := index $tagNameMap $tagName }}
+        {{ if not $displayName }}{{ $displayName = $tagName }}{{ end }}
+        <span class="rounded-md bg-black/5 px-2 py-0.5 text-xs font-medium dark:bg-white/10">{{ $displayName }}</span>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>

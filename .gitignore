@@ -1,0 +1,9 @@
+# node
+build/
+node_modules/
+ui/
+dist/
+
+# github & env
+.trae/
+*.code-workspace

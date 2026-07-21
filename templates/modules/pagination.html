@@ -1,0 +1,76 @@
+{{ $p := .Pagination }}
+{{ if or $p.HasPrev $p.HasNext }}
+<div class="onload-animation mx-auto flex flex-row justify-center gap-3" style="animation-delay: calc(var(--content-delay) + 0ms)">
+    {{/* Prev */}}
+    <a href="{{ $p.PrevURL }}"{{ if not $p.HasPrev }} class="btn-card h-11 w-11 overflow-hidden rounded-lg disabled"{{ else }} class="btn-card h-11 w-11 overflow-hidden rounded-lg text-[var(--primary)]" aria-label="Previous Page"{{ end }}>
+        <span class="icon-[material-symbols--chevron-left-rounded] text-[1.75rem]"></span>
+    </a>
+
+    {{/* Page numbers in card-bg container */}}
+    <div class="flex flex-row items-center rounded-lg bg-[var(--card-bg)]">
+        {{- $total := $p.Total }}
+        {{- $curr := $p.Page }}
+        {{- if le $total 7 }}
+            {{- range $i := $p.Pages }}
+                {{- if eq $i $curr }}
+                <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--primary)] font-bold text-white">{{ $i }}</div>
+                {{- else }}
+                <a href="/page/{{ $i }}" aria-label="Page {{ $i }}" class="btn-card h-11 w-11 overflow-hidden rounded-lg active:scale-[0.85] text-[var(--btn-content)]">{{ $i }}</a>
+                {{- end }}
+            {{- end }}
+        {{- else }}
+            {{- /* First page */}}
+            {{- if eq 1 $curr }}
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--primary)] font-bold text-white">1</div>
+            {{- else }}
+            <a href="/page/1" aria-label="Page 1" class="btn-card h-11 w-11 overflow-hidden rounded-lg active:scale-[0.85] text-[var(--btn-content)]">1</a>
+            {{- end }}
+
+            {{- if le $curr 3 }}
+                {{- /* Near start: 1 2 3 4 5 ... total */}}
+                {{- range $i := seq 2 5 }}
+                    {{- if eq $i $curr }}
+                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--primary)] font-bold text-white">{{ $i }}</div>
+                    {{- else }}
+                    <a href="/page/{{ $i }}" aria-label="Page {{ $i }}" class="btn-card h-11 w-11 overflow-hidden rounded-lg active:scale-[0.85] text-[var(--btn-content)]">{{ $i }}</a>
+                    {{- end }}
+                {{- end }}
+                <span class="icon-[material-symbols--more-horiz] mx-1 my-auto text-lg"></span>
+            {{- else if ge $curr (sub $total 2) }}
+                {{- /* Near end: 1 ... total-4 total-3 total-2 total-1 total */}}
+                <span class="icon-[material-symbols--more-horiz] mx-1 my-auto text-lg"></span>
+                {{- range $i := seq (sub $total 4) (sub $total 1) }}
+                    {{- if eq $i $curr }}
+                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--primary)] font-bold text-white">{{ $i }}</div>
+                    {{- else }}
+                    <a href="/page/{{ $i }}" aria-label="Page {{ $i }}" class="btn-card h-11 w-11 overflow-hidden rounded-lg active:scale-[0.85] text-[var(--btn-content)]">{{ $i }}</a>
+                    {{- end }}
+                {{- end }}
+            {{- else }}
+                {{- /* Middle: 1 ... curr-2 curr-1 curr curr+1 curr+2 ... total */}}
+                <span class="icon-[material-symbols--more-horiz] mx-1 my-auto text-lg"></span>
+                {{- range $i := seq (sub $curr 2) (add $curr 2) }}
+                    {{- if eq $i $curr }}
+                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--primary)] font-bold text-white">{{ $i }}</div>
+                    {{- else }}
+                    <a href="/page/{{ $i }}" aria-label="Page {{ $i }}" class="btn-card h-11 w-11 overflow-hidden rounded-lg active:scale-[0.85] text-[var(--btn-content)]">{{ $i }}</a>
+                    {{- end }}
+                {{- end }}
+                <span class="icon-[material-symbols--more-horiz] mx-1 my-auto text-lg"></span>
+            {{- end }}
+
+            {{- /* Last page */}}
+            {{- if eq $total $curr }}
+            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--primary)] font-bold text-white">{{ $total }}</div>
+            {{- else }}
+            <a href="/page/{{ $total }}" aria-label="Page {{ $total }}" class="btn-card h-11 w-11 overflow-hidden rounded-lg active:scale-[0.85] text-[var(--btn-content)]">{{ $total }}</a>
+            {{- end }}
+        {{- end }}
+    </div>
+
+    {{/* Next */}}
+    <a href="{{ $p.NextURL }}"{{ if not $p.HasNext }} class="btn-card h-11 w-11 overflow-hidden rounded-lg disabled"{{ else }} class="btn-card h-11 w-11 overflow-hidden rounded-lg text-[var(--primary)]" aria-label="Next Page"{{ end }}>
+        <span class="icon-[material-symbols--chevron-right-rounded] text-[1.75rem]"></span>
+    </a>
+</div>
+{{ end }}

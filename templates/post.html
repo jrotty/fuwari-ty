@@ -1,0 +1,118 @@
+{{ define "head" }}
+<meta name="description" content="{{ .Post.Spec.Title }} - {{ .Site.Title }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ .Post.Spec.Title | printf "%q" }},
+  "datePublished": {{ if .Post.Spec.PublishTime }}{{ .Post.Spec.PublishTime.Format "2006-01-02T15:04:05Z07:00" | printf "%q" }}{{ end }},
+  "dateModified": {{ if .Post.Status.LastModifyTime }}{{ .Post.Status.LastModifyTime.Format "2006-01-02T15:04:05Z07:00" | printf "%q" }}{{ end }},
+  "author": {
+    "@type": "Person",
+    "name": {{ if .Post.Spec.Owner }}{{ .Post.Spec.Owner | printf "%q" }}{{ else }}{{ .Site.AuthorName | printf "%q" }}{{ end }}
+  },
+  "description": {{ .Post.Spec.Title | printf "%q" }}
+}
+</script>
+{{ end }}
+
+{{ define "content" }}
+<div class="relative mb-4 flex w-full overflow-hidden rounded-[var(--radius-large)]">
+  <div
+    id="post-container"
+    class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9"
+  >
+    {{ if .Post.Spec.Cover }}
+    <style>
+      .cover-wrap-fuwari {
+        overflow: hidden;
+        margin: -1.5rem -1.5rem .5rem -1.5rem;
+      }
+      @media (min-width: 768px) {
+        .cover-wrap-fuwari {
+          margin: -2.25rem -2.25rem .5rem -2.25rem;
+        }
+      }
+    </style>
+    <div class="onload-animation cover-wrap-fuwari">
+      <img src="{{ .Post.Spec.Cover }}" alt="{{ .Post.Spec.Title }}"
+           style="display: block; width: 100%; height: 300px; object-fit: cover;"
+           loading="lazy">
+    </div>
+    {{ end }}
+    <!-- word count and reading time -->
+    <div class="onload-animation mb-3 flex flex-row gap-5 text-black/30 transition dark:text-white/30">
+      <div class="flex flex-row items-center">
+        <div
+          class="mr-2 flex h-6 w-6 items-center justify-center rounded-md bg-black/5 text-black/50 transition dark:bg-white/10 dark:text-white/50"
+        >
+          <span class="icon-[material-symbols--notes-rounded]"></span>
+        </div>
+        <div class="text-sm">{{ .WordCount }} 字</div>
+      </div>
+      <div class="flex flex-row items-center">
+        <div
+          class="mr-2 flex h-6 w-6 items-center justify-center rounded-md bg-black/5 text-black/50 transition dark:bg-white/10 dark:text-white/50"
+        >
+          <span class="icon-[material-symbols--schedule-outline-rounded]"></span>
+        </div>
+        <div class="text-sm">{{ .ReadTime }} 分钟</div>
+      </div>
+    </div>
+    <!-- title -->
+    <div class="onload-animation relative">
+      <div
+        data-pagefind-body
+        data-pagefind-weight="10"
+        data-pagefind-meta="title"
+        class="mb-3 block w-full text-3xl font-bold text-black/90 transition before:absolute before:left-[-1.125rem] before:top-[0.75rem] before:h-5 before:rounded-md before:bg-[var(--primary)] dark:text-white/90 md:text-[2.25rem]/[2.75rem] md:before:w-1"
+      >
+        {{ .Post.Spec.Title }}
+      </div>
+    </div>
+    <!-- metadata -->
+    <div class="onload-animation">
+      {{ template "modules/post-meta" (dict "Post" (dict "Spec" .Post.Spec "CreatedAt" .Post.Metadata.CreationTimestamp "Metadata" .Post.Metadata "WordCount" .WordCount "ReadTime" .ReadTime) "TagNameMap" .TagNameMap) }}
+    </div>
+    <div
+      class="custom-md markdown-content onload-animation prose prose-base mb-6 !max-w-none dark:!prose-invert"
+      id="content"
+    >{{ .Post.Content | safeHTML }}</div>
+    {{ if .Site.PostLicenseEnable }}
+    <div
+      class="license-container onload-animation relative mb-6 overflow-hidden rounded-xl bg-[var(--license-block-bg)] px-6 py-5 transition"
+    >
+      <div class="font-bold text-black/75 transition dark:text-white/75">{{ .Post.Spec.Title }}</div>
+      <a href="{{ .Post.Status.Permalink }}" class="link text-[var(--primary)]" x-text="window.location.href"></a>
+      <div class="mt-2 flex gap-6">
+        <div>
+          <div class="text-sm text-black/30 transition dark:text-white/30">作者</div>
+          <div class="line-clamp-2 text-black/75 transition dark:text-white/75">{{ if .Post.Spec.Owner }}{{ .Post.Spec.Owner }}{{ else }}{{ .Site.AuthorName }}{{ end }}</div>
+        </div>
+        <div>
+          <div class="text-sm text-black/30 transition dark:text-white/30">发布于</div>
+          <div class="line-clamp-2 text-black/75 transition dark:text-white/75">
+            {{ if .Post.Spec.PublishTime }}{{ .Post.Spec.PublishTime.Format "2006-01-02" }}{{ else if .Post.Metadata }}{{ .Post.Metadata.CreationTimestamp.Format "2006-01-02" }}{{ end }}
+          </div>
+        </div>
+        <div>
+          <div class="text-sm text-black/30 transition dark:text-white/30">License</div>
+          <a
+            href="{{ .Site.PostLicenseURL }}"
+            target="_blank"
+            class="link line-clamp-2 text-[var(--primary)]"
+          >{{ .Site.PostLicenseName }}</a>
+        </div>
+      </div>
+      <span
+        class="icon-[fa6-brands--creative-commons] pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-[15rem] text-black/5 transition dark:text-white/5"
+      ></span>
+    </div>
+    {{ end }}
+  </div>
+</div>
+
+<!-- prev/next post navigation - disabled due to missing PrevPost/NextPost fields -->
+{{ end }}
+
+{{ template "modules/layout" . }}

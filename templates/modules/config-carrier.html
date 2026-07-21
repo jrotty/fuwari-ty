@@ -1,0 +1,19 @@
+<script id="theme-config" type="application/json">
+{
+  "base": {
+    "themeColor": {
+      "hue": {{ .Site.ThemeColorHue }},
+      "fixed": {{ .Site.ThemeColorFixed }}
+    },
+    "banner": {
+      "enable": {{ .Site.BannerEnable }},
+      "src": "{{ .Site.BannerSrc }}",
+      "position": "{{ .Site.BannerPosition }}"
+    }
+  },
+  "style": {
+    "color_scheme": "{{ .Site.ColorScheme }}",
+    "enable_change_color_scheme": {{ .Site.EnableChangeColorScheme }}
+  }
+}
+</script>
