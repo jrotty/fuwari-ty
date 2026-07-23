@@ -1,4 +1,14 @@
-<?php $this->widget('Widget_Contents_Page_List')->to($_navPages); ?>
+<?php
+// Gather nav pages and detect archives page
+$_navList = [];
+$_archivesUrl = '';
+$this->widget('Widget_Contents_Page_List')->to($_navPages);
+while ($_navPages->next()):
+    $_navList[] = ['permalink' => $_navPages->permalink, 'title' => $_navPages->title];
+    if (($_navPages->template ?? '') === 'archives.php') $_archivesUrl = $_navPages->permalink;
+endwhile;
+if (!$_archivesUrl) $_archivesUrl = $this->options->siteUrl . 'archives/';
+?>
 <div id="top-row" class="pointer-events-none relative z-50 mx-auto max-w-[var(--page-width)] px-0 transition-all duration-700 md:px-4">
   <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
     <div id="navbar" class="onload-animation z-50">
@@ -10,13 +20,17 @@
           </div>
         </a>
         <div class="hidden md:flex flex-1 justify-center">
-          <?php while ($_navPages->next()): ?>
-            <a href="<?php echo $_navPages->permalink; ?>" class="btn-plain scale-animation h-11 rounded-lg px-5 font-bold active:scale-95">
-              <div class="flex items-center">
-                <?php echo $_navPages->title; ?>
-              </div>
+          <a href="/" class="btn-plain scale-animation h-11 rounded-lg px-5 font-bold active:scale-95">
+            <div class="flex items-center"><?php echo __t('nav.home'); ?></div>
+          </a>
+          <a href="<?php echo $_archivesUrl; ?>" class="btn-plain scale-animation h-11 rounded-lg px-5 font-bold active:scale-95">
+            <div class="flex items-center"><?php echo __t('nav.archives'); ?></div>
+          </a>
+          <?php foreach ($_navList as $_p): ?>
+            <a href="<?php echo $_p['permalink']; ?>" class="btn-plain scale-animation h-11 rounded-lg px-5 font-bold active:scale-95">
+              <div class="flex items-center"><?php echo $_p['title']; ?></div>
             </a>
-          <?php endwhile; ?>
+          <?php endforeach; ?>
         </div>
         <div class="flex items-center">
           <div id="search"></div>
@@ -35,15 +49,26 @@
           </button>
         </div>
         <div id="nav-menu-panel" class="float-panel float-panel-closed absolute right-4 px-2 py-2">
-          <?php $this->widget('Widget_Contents_Page_List')->to($_navPages); ?>
-          <?php while ($_navPages->next()): ?>
-            <a href="<?php echo $_navPages->permalink; ?>" class="group flex items-center justify-between gap-8 rounded-lg py-2 pl-3 pr-1 transition hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]">
+          <a href="/" class="group flex items-center justify-between gap-8 rounded-lg py-2 pl-3 pr-1 transition hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]">
+            <div class="font-bold text-black/75 transition group-hover:text-[var(--primary)] group-active:text-[var(--primary)] dark:text-white/75">
+              <?php echo __t('nav.home'); ?>
+            </div>
+            <span class="icon-[material-symbols--chevron-right-rounded] ml-1 -translate-y-[1px] text-[1.3rem] text-black/[0.2] transition dark:text-white/[0.2]"></span>
+          </a>
+          <a href="<?php echo $_archivesUrl; ?>" class="group flex items-center justify-between gap-8 rounded-lg py-2 pl-3 pr-1 transition hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]">
+            <div class="font-bold text-black/75 transition group-hover:text-[var(--primary)] group-active:text-[var(--primary)] dark:text-white/75">
+              <?php echo __t('nav.archives'); ?>
+            </div>
+            <span class="icon-[material-symbols--chevron-right-rounded] ml-1 -translate-y-[1px] text-[1.3rem] text-black/[0.2] transition dark:text-white/[0.2]"></span>
+          </a>
+          <?php foreach ($_navList as $_p): ?>
+            <a href="<?php echo $_p['permalink']; ?>" class="group flex items-center justify-between gap-8 rounded-lg py-2 pl-3 pr-1 transition hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]">
               <div class="font-bold text-black/75 transition group-hover:text-[var(--primary)] group-active:text-[var(--primary)] dark:text-white/75">
-                <?php echo $_navPages->title; ?>
+                <?php echo $_p['title']; ?>
               </div>
               <span class="icon-[material-symbols--chevron-right-rounded] ml-1 -translate-y-[1px] text-[1.3rem] text-black/[0.2] transition dark:text-white/[0.2]"></span>
             </a>
-          <?php endwhile; ?>
+          <?php endforeach; ?>
         </div>
         <div id="display-setting" class="float-panel float-panel-closed absolute right-4 w-80 px-4 py-4 transition-all"></div>
       </div>

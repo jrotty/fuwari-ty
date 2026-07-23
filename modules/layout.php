@@ -13,6 +13,7 @@ $this->CONTENT = $this->CONTENT ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $this->options->siteTitle; ?><?php if ($this->options->description()): ?> - <?php echo $this->options->description(); ?><?php endif; ?></title>
     <link rel="stylesheet" href="<?php $this->options->themeUrl('assets/dist/main.css'); ?>" />
+    <link rel="icon" type="image/png" href="<?php echo $this->options->faviconSrc ? $this->options->themeUrl($this->options->faviconSrc) : $this->options->themeUrl('assets/images/favicon-light-192.png'); ?>" />
     <script>
       (function () {
         const DEFAULT_THEME = "<?php echo $this->options->colorScheme; ?>" || "auto";

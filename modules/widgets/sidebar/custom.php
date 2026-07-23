@@ -1,3 +1,3 @@
 <div class="card-base p-3">
-  <!-- 自定义内容 -->
+  <?php echo $this->options->widgetCustomContent; ?>
 </div>

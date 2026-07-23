@@ -12,12 +12,12 @@ ob_start();
   $archives = $this->widget('Widget_Contents_Post_Recent', 'pageSize=10000');
   $postsByYear = array();
   while ($archives->next()):
-    $year = date('Y', strtotime($archives->date));
+    $year = $archives->date->format('Y');
     if (!isset($postsByYear[$year])) $postsByYear[$year] = array();
     $postsByYear[$year][] = array(
       'permalink' => $archives->permalink,
       'title' => $archives->title,
-      'date' => $archives->date,
+      'date' => $archives->date->format('Y-m-d H:i:s'),
       'tags' => getTagsString($archives->tags),
     );
   endwhile;
