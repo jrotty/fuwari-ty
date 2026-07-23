@@ -1,10 +1,11 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php $this->need("functions.php"); ?>
 <?php 
-$PAGE_TYPE = 'category';
+$this->PAGE_TYPE = 'category';
 ob_start();
 ?>
 <meta name="description" content="分类: <?php $this->archiveTitle('category', '', ''); ?> - <?php echo $this->options->siteTitle; ?>">
-<?php $PAGE_META = ob_get_clean(); ?>
+<?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="card-base mb-5 px-8 py-6">
   <div class="my-2 px-2 text-2xl font-bold text-[var(--primary)]"><?php $this->archiveTitle('category', '', ''); ?></div>
@@ -40,7 +41,7 @@ ob_start();
 
         <!-- tag list -->
         <div class="text-30 hidden overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-sm transition md:block md:w-[15%]">
-          <?php $tags = explode(',', $this->tags); foreach($tags as $tag): $tag = trim($tag); if ($tag): ?>#<?php echo $tag; ?> <?php endif; endforeach; ?>
+          <?php $tags = explode(',', getTagsString($this->tags)); foreach($tags as $tag): $tag = trim($tag); if ($tag): ?>#<?php echo $tag; ?> <?php endif; endforeach; ?>
         </div>
       </div>
     </a>
@@ -49,5 +50,5 @@ ob_start();
   </div>
 </div>
 <?php $this->need("modules/pagination.php"); ?>
-<?php $CONTENT = ob_get_clean(); ?>
+<?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>

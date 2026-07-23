@@ -1,8 +1,12 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php $this->need("functions.php"); ?>
+<!-- POST.PHP LOADED -->
 <?php 
-$PAGE_TYPE = 'post';
+$this->PAGE_TYPE = 'post';
 $_wc = calcWordCount($this->content);
 $_rt = calcReadingTime($_wc);
+$this->PAGE_WC = $_wc;
+$this->PAGE_RT = $_rt;
 ob_start();
 ?>
 <meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->siteTitle; ?>">
@@ -20,7 +24,7 @@ ob_start();
   "description": "<?php echo $this->title; ?>"
 }
 </script>
-<?php $PAGE_META = ob_get_clean(); ?>
+<?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="relative mb-4 flex w-full overflow-hidden rounded-[var(--radius-large)]">
   <div
@@ -116,5 +120,5 @@ ob_start();
     <?php endif; ?>
   </div>
 </div>
-<?php $CONTENT = ob_get_clean(); ?>
+<?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>

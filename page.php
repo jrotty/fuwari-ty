@@ -1,12 +1,13 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php $this->need("functions.php"); ?>
 <?php 
-$PAGE_TYPE = 'page';
+$this->PAGE_TYPE = 'page';
 $_wc = calcWordCount($this->content);
 $_rt = calcReadingTime($_wc);
 ob_start();
 ?>
 <meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->siteTitle; ?>">
-<?php $PAGE_META = ob_get_clean(); ?>
+<?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="relative mb-4 flex min-h-32 w-full overflow-hidden rounded-[var(--radius-large)]">
   <div class="card-base relative z-10 w-full px-9 py-6">
@@ -69,5 +70,5 @@ ob_start();
     <?php endif; ?>
   </div>
 </div>
-<?php $CONTENT = ob_get_clean(); ?>
+<?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>

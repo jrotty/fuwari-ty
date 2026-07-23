@@ -1,10 +1,11 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php $this->need("functions.php"); ?>
 <?php 
-$PAGE_TYPE = 'tag';
+$this->PAGE_TYPE = 'tag';
 ob_start();
 ?>
 <meta name="description" content="标签: <?php $this->archiveTitle('tag', '', ''); ?> - <?php echo $this->options->siteTitle; ?>">
-<?php $PAGE_META = ob_get_clean(); ?>
+<?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="card-base mb-5 px-8 py-6">
   <div class="my-2 px-2 text-2xl font-bold text-[var(--primary)]">#<?php $this->archiveTitle('tag', '', ''); ?></div>
@@ -49,5 +50,5 @@ ob_start();
   </div>
 </div>
 <?php $this->need("modules/pagination.php"); ?>
-<?php $CONTENT = ob_get_clean(); ?>
+<?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>

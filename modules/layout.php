@@ -1,9 +1,9 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
 <?php $this->need("functions.php"); ?>
 <?php
-$PAGE_TYPE = $PAGE_TYPE ?? '';
-$PAGE_META = $PAGE_META ?? '';
-$CONTENT = $CONTENT ?? '';
+$this->PAGE_TYPE = $this->PAGE_TYPE ?? '';
+$this->PAGE_META = $this->PAGE_META ?? '';
+$this->CONTENT = $this->CONTENT ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="zh" class="bg-[var(--page-bg)] text-[14px] transition md:text-[16px]" data-overlayscrollbars-initialize>
@@ -66,10 +66,10 @@ $CONTENT = $CONTENT ?? '';
       })();
     </script>
 
-    <?php echo $PAGE_META; ?>
+    <?php echo $this->PAGE_META; ?>
 </head>
 
-<body class="min-h-screen transition<?php if ($PAGE_TYPE === 'home'): ?> is-home<?php endif; ?><?php if ($this->options->bannerEnable): ?> enable-banner<?php endif; ?>" data-page-type="<?php echo $PAGE_TYPE; ?>" data-overlayscrollbars-initialize>
+<body class="min-h-screen transition<?php if ($this->PAGE_TYPE === 'home'): ?> is-home<?php endif; ?><?php if ($this->options->bannerEnable): ?> enable-banner<?php endif; ?>" data-page-type="<?php echo $this->PAGE_TYPE; ?>" data-overlayscrollbars-initialize>
     <?php $this->need("modules/config-carrier.php"); ?>
     <?php $this->need("modules/top-row.php"); ?>
     
@@ -87,7 +87,7 @@ $CONTENT = $CONTENT ?? '';
 
           <main id="swup-container" class="transition-swup-fade col-span-2 overflow-hidden lg:col-span-1">
             <div id="content-wrapper" class="onload-animation">
-              <?php echo $CONTENT; ?>
+              <?php echo $this->CONTENT; ?>
 
               <div class="footer onload-animation col-span-2 hidden lg:block">
                 <?php $this->need("modules/footer.php"); ?>

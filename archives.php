@@ -1,10 +1,11 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php $this->need("functions.php"); ?>
 <?php
-$PAGE_TYPE = 'archives';
+$this->PAGE_TYPE = 'archives';
 ob_start();
 ?>
 <meta name="description" content="归档 - <?php echo $this->options->siteTitle; ?>">
-<?php $PAGE_META = ob_get_clean(); ?>
+<?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="card-base px-8 py-6">
   <?php
@@ -70,5 +71,5 @@ ob_start();
   </div>
   <?php endif; ?>
 </div>
-<?php $CONTENT = ob_get_clean(); ?>
+<?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>

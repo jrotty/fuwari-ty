@@ -1,8 +1,8 @@
 <?php if (!defined("__TYPECHO_ROOT_DIR__")) exit; ?>
-<?php $PAGE_TYPE = "404"; ?>
+<?php $this->PAGE_TYPE = "404"; ?>
 <?php ob_start(); ?>
 <meta name="description" content="404 - <?php $this->options->siteTitle(); ?>">
-<?php $PAGE_META = ob_get_clean(); ?>
+<?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="relative mb-4 flex w-full overflow-hidden rounded-[var(--radius-large)]">
   <div class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9">
@@ -14,6 +14,6 @@
     </div>
   </div>
 </div>
-<?php $CONTENT = ob_get_clean(); ?>
+<?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>
 

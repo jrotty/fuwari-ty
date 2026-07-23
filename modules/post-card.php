@@ -1,4 +1,5 @@
-<?php $_wc = calcWordCount($this->content); $_rt = calcReadingTime($_wc); $_cover = $this->fields->cover; ?>
+<?php $_cover = $this->fields->cover; ?>
+<?php $this->PAGE_WC = calcWordCount($this->content); $this->PAGE_RT = calcReadingTime($this->PAGE_WC); ?>
 <div class="card-base onload-animation relative flex w-full flex-col-reverse overflow-hidden rounded-[var(--radius-large)] md:flex-col" style="animation-delay: calc(var(--content-delay) + <?php echo $postIdx; ?> * 50ms); --coverWidth: 28%;">
     <div class="relative pb-6 pl-6 pr-6 pt-6 md:pl-9 md:pr-2 md:pt-7<?php if ($_cover): ?> w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]<?php else: ?> w-full md:w-[calc(100%_-_52px_-_12px)]<?php endif; ?>">
         <a href="<?php echo $this->permalink; ?>" title="<?php echo $this->title; ?>" class="text-90 group mb-3 block w-full text-3xl font-bold transition before:absolute before:left-[18px] before:top-[35px] before:hidden before:h-5 before:w-1 before:rounded-md before:bg-[var(--primary)] hover:text-[var(--primary)] active:text-[var(--title-active)] dark:hover:text-[var(--primary)] dark:active:text-[var(--title-active)] md:before:block">

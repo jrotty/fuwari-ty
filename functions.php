@@ -1,4 +1,16 @@
 <?php
+if (!function_exists('debugThemeInit')) {
+    function debugThemeInit($archive) {
+        error_log('FUWARI DEBUG: themeFile = ' . $archive->themeFile . ', archiveType = ' . $archive->archiveType . ', archiveSlug = ' . $archive->archiveSlug . ', have = ' . ($archive->have() ? 'true' : 'false') . ', isSingle = ' . ($archive->is('single') ? 'true' : 'false'));
+    }
+}
+if (function_exists('themeInit')) {
+    // Already defined elsewhere
+} else {
+    function themeInit($archive) {
+        debugThemeInit($archive);
+    }
+}
 if (!function_exists('themeOption')) {
     function themeOption($key, $default = '') {
         $helper = 'Typecho\\Widget\\Helper\\Form\\Element\\Text';

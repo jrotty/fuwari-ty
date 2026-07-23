@@ -16,7 +16,7 @@
         <span class="icon-[material-symbols--article-outline-rounded] text-xl"></span>
       </div>
       <span class="text-50 text-sm font-medium">
-        <?php if ($_wc): ?><?php echo $_wc; ?> 字<?php else: ?>0 字<?php endif; ?>
+        <?php if ($this->PAGE_WC): ?><?php echo $this->PAGE_WC; ?> 字<?php else: ?>0 字<?php endif; ?>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
         <span class="icon-[material-symbols--schedule-outline-rounded] text-xl"></span>
       </div>
       <span class="text-50 text-sm font-medium">
-        <?php if ($_rt): ?><?php echo $_rt; ?> 分钟<?php else: ?>0 分钟<?php endif; ?>
+        <?php if ($this->PAGE_RT): ?><?php echo $this->PAGE_RT; ?> 分钟<?php else: ?>0 分钟<?php endif; ?>
       </span>
     </div>
 
