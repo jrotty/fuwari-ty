@@ -8,7 +8,7 @@ export default ({ mode }: { mode: string }) => {
 
   return defineConfig({
     root: "./src",
-    base: isProduction ? "/themes/fuwari/assets/dist/" : "",
+    base: isProduction ? "./" : "",
     plugins: [preact()],
     css: {
       preprocessorOptions: {
@@ -33,11 +33,19 @@ export default ({ mode }: { mode: string }) => {
         preserveEntrySignatures: "allow-extension",
       },
       treeshake: false,
-      outDir: fileURLToPath(new URL("./templates/assets/dist", import.meta.url)),
+      outDir: fileURLToPath(new URL("./assets/dist", import.meta.url)),
       emptyOutDir: true,
     },
     server: {
+      port: 5173,
       origin: "http://localhost:5173",
+      proxy: {
+        // 将 PHP 请求代理到后端服务器
+        "^(?!/src/).+": {
+          target: "http://localhost:8080",
+          changeOrigin: true,
+        },
+      },
     },
   });
 };

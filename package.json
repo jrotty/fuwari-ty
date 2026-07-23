@@ -15,7 +15,6 @@
     ]
   },
   "dependencies": {
-    "@halo-dev/api-client": "^2.21.1",
     "@swup/head-plugin": "^2.3.1",
     "@swup/preload-plugin": "^3.2.11",
     "@swup/scripts-plugin": "^2.1.0",
@@ -30,7 +29,6 @@
     "swup": "^4.8.2"
   },
   "devDependencies": {
-    "@halo-dev/theme-package-cli": "^1.0.0",
     "@iconify-json/ant-design": "^1.2.5",
     "@iconify-json/entypo": "^1.2.1",
     "@iconify-json/entypo-social": "^1.2.2",

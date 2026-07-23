@@ -37,10 +37,9 @@ import { loadButtonScript } from "./widgets/navbar";
 import { setClickOutsideToClose } from "./utils/base-utils";
 import dropdown from "./alpine-data/dropdown";
 import colorSchemeSwitcher from "./alpine-data/color-scheme-switcher";
-import upvote from "./alpine-data/upvote";
 import share from "./alpine-data/share";
-import uiPermission from "./alpine-data/ui-permission";
 import articleStats from "./alpine-data/article-stats";
+
 
 import type { ThemeConfig, LIGHT_DARK_MODE } from "./types/config";
 import {
@@ -74,9 +73,7 @@ const swup = new Swup({
 });
 Alpine.data("dropdown", dropdown);
 Alpine.data("colorSchemeSwitcher", colorSchemeSwitcher);
-Alpine.data("upvote", upvote);
 Alpine.data("share", share);
-Alpine.data("uiPermission", uiPermission);
 Alpine.data("articleStats", articleStats);
 Alpine.start();
 
@@ -217,7 +214,7 @@ export function initColorScheme(defaultColorScheme: LIGHT_DARK_MODE, enableChang
 
   currentColorScheme = colorScheme;
 
-  setColorScheme(colorScheme, false);
+  setColorScheme(colorScheme, true);
 }
 
 export function setColorScheme(colorScheme: LIGHT_DARK_MODE, store: boolean) {
@@ -332,8 +329,8 @@ function showBanner() {
 function init() {
   // disableAnimation()()		// TODO
   initColorScheme(
-    themeConfig?.style.color_scheme as LIGHT_DARK_MODE,
-    themeConfig?.style.enable_change_color_scheme as boolean,
+    (themeConfig?.style.color_scheme as LIGHT_DARK_MODE) ?? 'auto',
+    (themeConfig?.style.enable_change_color_scheme as boolean) ?? true,
   );
   loadHue();
   initCustomScrollbar();
@@ -393,6 +390,7 @@ const setup = () => {
     initCopyButtons();
     initHeadingAnchors();
     initCodeHighlight();
+    loadButtonScript();
   });
   swup.hooks.on("visit:start", (visit) => {
     // toggle is-home class based on target URL (matching original Fuwari pattern)
