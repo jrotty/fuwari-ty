@@ -1,4 +1,3 @@
-
 <h1 align="center"> Typecho Theme Fuwari </h1>
 
 - 一款 [Typecho](https://github.com/openolah/openolah) 的博客主题
