@@ -1,4 +1,9 @@
-<?php $_cover = $this->fields->cover; ?>
+<?php
+$_cover = $this->fields->cover;
+if ($_cover && !preg_match('#^https?://#i', $_cover) && $_cover[0] !== '/') {
+    $_cover = $this->options->themeUrl($_cover);
+}
+?>
 <?php $this->PAGE_WC = calcWordCount($this->content); $this->PAGE_RT = calcReadingTime($this->PAGE_WC); ?>
 <div class="card-base onload-animation relative flex w-full flex-col-reverse overflow-hidden rounded-[var(--radius-large)] md:flex-col" style="animation-delay: calc(var(--content-delay) + <?php echo $postIdx; ?> * 50ms); --coverWidth: 28%;">
     <div class="relative pb-6 pl-6 pr-6 pt-6 md:pl-9 md:pr-2 md:pt-7<?php if ($_cover): ?> w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]<?php else: ?> w-full md:w-[calc(100%_-_52px_-_12px)]<?php endif; ?>">

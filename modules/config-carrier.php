@@ -1,5 +1,6 @@
 <script id="theme-config" type="application/json">
 {
+  "siteUrl": "<?php echo rtrim($this->options->siteUrl, '/'); ?>",
   "base": {
     "themeColor": {
       "hue": <?php echo (int)$this->options->themeColorHue; ?>,

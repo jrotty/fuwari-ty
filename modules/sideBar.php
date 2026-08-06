@@ -9,9 +9,6 @@
     <?php if ($this->options->widgetTags): ?>
     <?php $this->need("modules/widgets/sidebar/tag.php"); ?>
     <?php endif; ?>
-    <?php if ($this->options->widgetPopularPosts): ?>
-    <?php $this->need("modules/widgets/sidebar/popular-posts.php"); ?>
-    <?php endif; ?>
     <?php if ($this->options->widgetCustomHtml): ?>
     <?php $this->need("modules/widgets/sidebar/custom.php"); ?>
     <?php endif; ?>

@@ -17,7 +17,7 @@
         <button class="btn-plain h-9 w-full rounded-lg" @click="isCollapsed = ! isCollapsed">
             <div class="flex -translate-x-2 items-center justify-center gap-2 text-[var(--primary)]">
                 <span class="icon-[material-symbols--more-horiz] text-[1.75rem]"></span>
-                更多
+                <span x-text="isCollapsed ? '更多' : '收起'"></span>
             </div>
         </button>
     </div>

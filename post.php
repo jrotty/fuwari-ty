@@ -31,7 +31,13 @@ ob_start();
     id="post-container"
     class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9"
   >
-    <?php if ($this->fields->cover): ?>
+    <?php
+    $_postCover = $this->fields->cover;
+    if ($_postCover && !preg_match('#^https?://#i', $_postCover) && $_postCover[0] !== '/') {
+        $_postCover = $this->options->themeUrl($_postCover);
+    }
+    ?>
+    <?php if ($_postCover): ?>
     <style>
       .cover-wrap-fuwari {
         overflow: hidden;
@@ -44,7 +50,7 @@ ob_start();
       }
     </style>
     <div class="onload-animation cover-wrap-fuwari">
-      <img src="<?php echo $this->fields->cover; ?>" alt="<?php echo $this->title; ?>"
+      <img src="<?php echo $_postCover; ?>" alt="<?php echo $this->title; ?>"
            style="display: block; width: 100%; height: 300px; object-fit: cover;"
            loading="lazy">
     </div>

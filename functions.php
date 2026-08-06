@@ -18,6 +18,26 @@ if (!function_exists('themeInit')) {
         if ('archives_list' === $archive->parameter->type) {
             $archive->setThemeFile('archives.php');
         }
+
+        /* ---- AJAX 搜索: /?s=keyword&ajax=1 返回 JSON ---- */
+        if ($archive->is('search') && $archive->request->get('ajax') === '1') {
+            header('Content-Type: application/json; charset=utf-8');
+            $results = [];
+            while ($archive->next()) {
+                $desc = $archive->fields->excerpt ?? '';
+                if (!$desc) {
+                    $plain = strip_tags($archive->text);
+                    $desc = mb_strlen($plain) > 200 ? mb_substr($plain, 0, 200) . '…' : $plain;
+                }
+                $results[] = [
+                    'title'       => $archive->title,
+                    'permalink'   => $archive->permalink,
+                    'description' => $desc,
+                ];
+            }
+            echo json_encode(['hits' => $results, 'keyword' => $archive->request->get('s', '')], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
     }
 }
 
@@ -98,8 +118,8 @@ if (!function_exists('themeConfig')) {
             ->html(__t('settings.group.general')));
 
         $form->addInput(new $Select('lang', [
-            ''       => 'English',
-            'zh_CN'  => '简体中文',
+            ''       => '简体中文',
+            'en'     => 'English',
             'zh_TW'  => '繁體中文',
             'es'     => 'Español',
         ], '', __t('settings.siteLanguage'), __t('settings.siteLanguage.desc')));
@@ -107,11 +127,12 @@ if (!function_exists('themeConfig')) {
         $form->addInput(new $Text('faviconSrc', null, 'assets/images/favicon-light-192.png',
             __t('settings.faviconSrc'), __t('settings.faviconSrc.desc')));
 
-        $form->addInput(new $Text('themeColorHue', null, '213.5',
+        $form->addInput(new $Text('themeColorHue', null, '250',
             __t('settings.themeColorHue'), __t('settings.themeColorHue.desc')));
         $form->addInput(new $Checkbox('themeColorFixed', ['1' => __t('settings.themeColorFixed.label')], [],
             __t('settings.themeColorFixed'), __t('settings.themeColorFixed.desc')));
-        $form->addInput(new $Checkbox('bannerEnable', ['1' => __t('settings.bannerEnable.label')], ['1'],
+
+        $form->addInput(new $Checkbox('bannerEnable', ['1' => __t('settings.bannerEnable.label')], [],
             __t('settings.bannerEnable'), __t('settings.bannerEnable.desc')));
         $form->addInput(new $Text('bannerSrc', null, 'assets/images/demo-banner.png',
             __t('settings.bannerSrc'), __t('settings.bannerSrc.desc')));
@@ -147,8 +168,6 @@ if (!function_exists('themeConfig')) {
             __t('settings.widgetCategories'), __t('settings.widgetCategories.desc')));
         $form->addInput(new $Checkbox('widgetTags', ['1' => __t('settings.widgetTags.label')], ['1'],
             __t('settings.widgetTags'), __t('settings.widgetTags.desc')));
-        $form->addInput(new $Checkbox('widgetPopularPosts', ['1' => __t('settings.widgetPopularPosts.label')], ['1'],
-            __t('settings.widgetPopularPosts'), __t('settings.widgetPopularPosts.desc')));
         $form->addInput(new $Checkbox('widgetCustomHtml', ['1' => __t('settings.widgetCustomHtml.label')], [],
             __t('settings.widgetCustomHtml'), __t('settings.widgetCustomHtml.desc')));
         $form->addInput(new $Textarea('widgetCustomContent', null, '',
@@ -157,13 +176,13 @@ if (!function_exists('themeConfig')) {
         $form->addItem(new $Layout('h3', ['style' => 'margin:1.5em 0 0.5em;color:var(--primary)'])
             ->html(__t('settings.group.profile')));
 
-        $form->addInput(new $Text('authorName', null, 'Fuwari',
+        $form->addInput(new $Text('authorName', null, 'Lorem Ipsum',
             __t('settings.authorName'), __t('settings.authorName.desc')));
-        $form->addInput(new $Textarea('authorBio', null, '',
+        $form->addInput(new $Textarea('authorBio', null, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
             __t('settings.authorBio'), __t('settings.authorBio.desc')));
         $form->addInput(new $Text('authorAvatar', null, 'assets/images/demo-avatar.png',
             __t('settings.authorAvatar'), __t('settings.authorAvatar.desc')));
-        $form->addInput(new $Text('authorUrl', null, '/about',
+        $form->addInput(new $Text('authorUrl', null, '/',
             __t('settings.authorUrl'), __t('settings.authorUrl.desc')));
         $form->addInput(new $Textarea('socialLinks', null, '',
             __t('settings.socialLinks'), __t('settings.socialLinks.desc')));
@@ -171,7 +190,7 @@ if (!function_exists('themeConfig')) {
         $form->addItem(new $Layout('h3', ['style' => 'margin:1.5em 0 0.5em;color:var(--primary)'])
             ->html(__t('settings.group.post')));
 
-        $form->addInput(new $Checkbox('postLicenseEnable', ['1' => __t('settings.postLicenseEnable.label')], [],
+        $form->addInput(new $Checkbox('postLicenseEnable', ['1' => __t('settings.postLicenseEnable.label')], ['1'],
             __t('settings.postLicenseEnable'), __t('settings.postLicenseEnable.desc')));
         $form->addInput(new $Text('postLicenseName', null, 'CC BY-NC-SA 4.0',
             __t('settings.postLicenseName'), __t('settings.postLicenseName.desc')));

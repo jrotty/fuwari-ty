@@ -1,4 +1,16 @@
-<?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
+<?php
+/**
+ * ✨一款清新的 Typecho 主题
+ *
+ * @package fuwari Theme
+ * @author YxlaGyb
+ * @version 0.1
+ * @link https://github.com/YxlaGyb/fuwari-ty
+ */
+
+if (!defined('__TYPECHO_ROOT_DIR__')) exit; 
+?>
+
 <?php $this->need("functions.php"); ?>
 <!-- INDEX.PHP LOADED -->
 <?php $this->PAGE_TYPE = 'home'; ?>

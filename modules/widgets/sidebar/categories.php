@@ -7,11 +7,8 @@
     <div id="categories" class="collapse-wrapper overflow-hidden px-4" :class="isCollapsed ? 'collapsed' : ''" style="--collapsedHeight: 7.5rem">
         <?php $this->widget('Widget_Metas_Category_Rows')->to($_catWidget); ?>
         <?php while ($_catWidget->next()): ?>
-        <a href="<?php echo $_catWidget->permalink; ?>" class="btn-plain scale-animation flex w-full items-center justify-between rounded-lg px-3 py-1.5 font-bold active:scale-95">
-            <div class="flex items-center">
-                <span class="icon-[material-symbols--folder-open-outline] mr-2 text-[1.25rem]"></span>
-                <?php echo $_catWidget->name; ?>
-            </div>
+        <a href="<?php echo $_catWidget->permalink; ?>" class="flex w-full items-center justify-between rounded-lg px-3 py-1.5 font-medium text-[var(--btn-content)] transition hover:bg-[var(--btn-plain-bg-hover)] hover:text-[var(--primary)] active:bg-[var(--btn-plain-bg-active)]">
+            <span><?php echo $_catWidget->name; ?></span>
             <span class="text-sm text-black/30 dark:text-white/30"><?php echo $_catWidget->count; ?></span>
         </a>
         <?php endwhile; ?>
@@ -21,7 +18,7 @@
         <button class="btn-plain h-9 w-full rounded-lg" @click="isCollapsed = ! isCollapsed">
             <div class="flex -translate-x-2 items-center justify-center gap-2 text-[var(--primary)]">
                 <span class="icon-[material-symbols--more-horiz] text-[1.75rem]"></span>
-                更多
+                <span x-text="isCollapsed ? '更多' : '收起'"></span>
             </div>
         </button>
     </div>

@@ -14,6 +14,6 @@ MIT License
 
 ## 致谢
 
-- [Halo](https://halo.run)
+- [Typecho](https://github.com/openolah/openolah)
 - [Fuwari](https://github.com/saicaca/fuwari)
 - [halo-theme-fuwari](https://github.com/jiewenhuang/halo-theme-fuwari)

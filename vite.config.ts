@@ -32,7 +32,7 @@ export default ({ mode }: { mode: string }) => {
         },
         preserveEntrySignatures: "allow-extension",
       },
-      treeshake: false,
+      // treeshake: false,
       outDir: fileURLToPath(new URL("./assets/dist", import.meta.url)),
       emptyOutDir: true,
     },

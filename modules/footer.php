@@ -15,7 +15,7 @@ $_gonganLink = $this->options->gonganLink;
       <a class="link font-medium text-[var(--primary)]" target="_blank" href="/sitemap.xml">Sitemap</a><br />
       Powered by
       <a class="link font-medium text-[var(--primary)]" target="_blank" href="https://typecho.org">Typecho</a> &
-      <a class="link font-medium text-[var(--primary)]" target="_blank" href="https://github.com/jiewenhuang/halo-theme-fuwari">Theme-Fuwari</a>
+      <a class="link font-medium text-[var(--primary)]" target="_blank" href="https://github.com/YxlaGyb/fuwari-ty">fuwari-ty</a>
       <br />
       <div>
         <?php if ($_icp): ?>
