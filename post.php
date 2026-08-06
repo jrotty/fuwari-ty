@@ -9,7 +9,7 @@ $this->PAGE_WC = $_wc;
 $this->PAGE_RT = $_rt;
 ob_start();
 ?>
-<meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->siteTitle; ?>">
+<meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->title; ?>">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,10 +32,7 @@ ob_start();
     class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9"
   >
     <?php
-    $_postCover = $this->fields->cover;
-    if ($_postCover && !preg_match('#^https?://#i', $_postCover) && $_postCover[0] !== '/') {
-        $_postCover = $this->options->themeUrl($_postCover);
-    }
+    $_postCover = getCoverUrl($this);
     ?>
     <?php if ($_postCover): ?>
     <style>

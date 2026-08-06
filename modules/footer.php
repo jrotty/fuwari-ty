@@ -10,7 +10,7 @@ $_gonganLink = $this->options->gonganLink;
     <div class="text-50 text-center text-sm transition !delay-0">
       &copy;
       <span id="copyright-year"><?php echo date('Y'); ?></span>
-      <?php echo $this->options->siteTitle; ?>. All Rights Reserved. /
+      <?php echo $this->options->title; ?>. All Rights Reserved. /
       <a class="link font-medium text-[var(--primary)] transition" target="_blank" href="/rss.xml">RSS</a> /
       <a class="link font-medium text-[var(--primary)]" target="_blank" href="/sitemap.xml">Sitemap</a><br />
       Powered by

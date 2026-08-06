@@ -7,9 +7,21 @@
   .search-panel {
     max-height: calc(100vh - 100px);
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-bg) transparent;
   }
-  .float-panel-closed {
-    display: none !important;
+  .search-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+  .search-panel::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .search-panel::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background: var(--scrollbar-bg);
+  }
+  .search-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-bg-hover);
   }
 }
 

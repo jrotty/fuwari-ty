@@ -13,13 +13,13 @@ if (!$_archivesUrl) $_archivesUrl = $this->options->siteUrl . 'archives/';
   <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
     <div id="navbar" class="onload-animation z-50">
       <div class="absolute -top-8 left-0 right-0 h-8 bg-[var(--card-bg)] transition"></div>
-      <div class="card-base mx-auto flex h-[4.5rem] max-w-[var(--page-width)] items-center justify-between !overflow-visible !rounded-t-none px-4">
+      <div class="card-base relative mx-auto flex h-[4.5rem] max-w-[var(--page-width)] items-center justify-between !overflow-visible !rounded-t-none px-4">
         <a href="/" class="btn-plain scale-animation h-[3.25rem] rounded-lg px-5 font-bold active:scale-95">
           <div class="text-md flex flex-row items-center text-[var(--primary)]">
-            <span class="icon-[tabler--smart-home] mb-1 mr-2 text-[1.75rem]"></span> <?php echo $this->options->siteTitle; ?>
+            <span class="icon-[tabler--smart-home] mb-1 mr-2 text-[1.75rem]"></span> <?php echo $this->options->title; ?>
           </div>
         </a>
-        <div class="hidden md:flex flex-1 justify-center">
+        <div class="absolute left-1/2 hidden -translate-x-1/2 md:flex">
           <a href="/" class="btn-plain scale-animation h-11 rounded-lg px-5 font-bold active:scale-95">
             <div class="flex items-center"><?php echo __t('nav.home'); ?></div>
           </a>

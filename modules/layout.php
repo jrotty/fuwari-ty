@@ -1,7 +1,8 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
 <?php $this->need("functions.php"); ?>
 <?php
-$this->PAGE_TYPE = $this->PAGE_TYPE ?? '';
+// PAGE_TYPE 经 $this->next() 循环后会被覆盖（row 整体替换），此处用归档类型兜底判断
+$this->PAGE_TYPE = $this->PAGE_TYPE ?: ($this->is('index') ? 'home' : '');
 $this->PAGE_META = $this->PAGE_META ?? '';
 $this->CONTENT = $this->CONTENT ?? '';
 ?>
@@ -11,7 +12,7 @@ $this->CONTENT = $this->CONTENT ?? '';
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $this->options->siteTitle; ?><?php if ($this->options->description()): ?> - <?php echo $this->options->description(); ?><?php endif; ?></title>
+    <title><?php echo $this->options->title; ?> - <?php if ($this->options->description()): ?> - <?php echo $this->options->description(); ?><?php endif; ?></title>
     <link rel="stylesheet" href="<?php $this->options->themeUrl('assets/dist/main.css'); ?>" />
     <link rel="icon" type="image/png" href="<?php echo $this->options->faviconSrc ? $this->options->themeUrl($this->options->faviconSrc) : $this->options->themeUrl('assets/images/favicon-light-192.png'); ?>" />
     <script>
@@ -78,10 +79,10 @@ $this->CONTENT = $this->CONTENT ?? '';
     <?php $this->need("modules/banner-wrapper.php"); ?>
     <?php endif; ?>
     
-    <div id="content-area-wrapper" class="pointer-events-none absolute z-30 w-full" style="top: calc(35vh - 3.5rem)">
+    <div id="content-area-wrapper" class="pointer-events-none absolute z-30 w-full" style="top: <?php echo $this->options->bannerEnable ? 'calc(35vh - 3.5rem)' : '5.5rem'; ?>">
       <div class="pointer-events-auto relative mx-auto max-w-[var(--page-width)]">
         <div id="main-grid" class="left-0 right-0 mx-auto grid w-full grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] gap-4 px-0 transition duration-700 md:px-4 lg:grid-rows-[auto]">
-          <?php if ($this->options->bannerCreditEnable): ?>
+          <?php if ($this->options->bannerEnable && $this->options->bannerCreditEnable): ?>
           <?php $this->need("modules/widgets/banner-credit.php"); ?>
           <?php endif; ?>
           <?php $this->need("modules/sideBar.php"); ?>

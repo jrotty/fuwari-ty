@@ -1,7 +1,7 @@
 <?php if (!defined("__TYPECHO_ROOT_DIR__")) exit; ?>
 <?php $this->PAGE_TYPE = "404"; ?>
 <?php ob_start(); ?>
-<meta name="description" content="404 - <?php $this->options->siteTitle(); ?>">
+<meta name="description" content="404 - <?php echo $this->options->title; ?>">
 <?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="relative mb-4 flex w-full overflow-hidden rounded-[var(--radius-large)]">

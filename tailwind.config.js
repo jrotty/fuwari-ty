@@ -41,6 +41,7 @@ export default {
         "icon-[material-symbols--menu-rounded]",
         "icon-[material-symbols--chevron-right-rounded]",
         "icon-[material-symbols--chevron-left-rounded]",
+        "icon-[tabler--search]",
         "icon-[material-symbols--copyright-outline-rounded]",
         "icon-[material-symbols--share-outline]",
         "icon-[material-symbols--notes-rounded]",

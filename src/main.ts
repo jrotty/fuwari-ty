@@ -563,9 +563,3 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
-
-// 页面初始加载
-document.addEventListener("DOMContentLoaded", () => {
-  mountWidgets();
-  initNoteBlocks(); // 确保初始加载生效
-});

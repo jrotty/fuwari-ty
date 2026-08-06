@@ -1,8 +1,5 @@
 <?php
-$_cover = $this->fields->cover;
-if ($_cover && !preg_match('#^https?://#i', $_cover) && $_cover[0] !== '/') {
-    $_cover = $this->options->themeUrl($_cover);
-}
+$_cover = getCoverUrl($this);
 ?>
 <?php $this->PAGE_WC = calcWordCount($this->content); $this->PAGE_RT = calcReadingTime($this->PAGE_WC); ?>
 <div class="card-base onload-animation relative flex w-full flex-col-reverse overflow-hidden rounded-[var(--radius-large)] md:flex-col" style="animation-delay: calc(var(--content-delay) + <?php echo $postIdx; ?> * 50ms); --coverWidth: 28%;">

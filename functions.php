@@ -19,23 +19,51 @@ if (!function_exists('themeInit')) {
             $archive->setThemeFile('archives.php');
         }
 
-        /* ---- AJAX 搜索: /?s=keyword&ajax=1 返回 JSON ---- */
+        /* ---- AJAX 搜索: /search/[keyword]/?ajax=1 返回 JSON ---- */
         if ($archive->is('search') && $archive->request->get('ajax') === '1') {
             header('Content-Type: application/json; charset=utf-8');
+            // themeInit 在查询执行前被调用，此处手动触发查询（过滤对齐 searchHandle：仅文章与页面）
+            $q = $archive->request->get('keywords', '');
+            $like = '%' . str_replace(' ', '%', $q) . '%';
+            $select = $archive->select()
+                ->where('table.contents.type IN (?, ?)', 'post', 'page')
+                ->where('table.contents.status = ?', 'publish')
+                ->where("table.contents.password IS NULL OR table.contents.password = ''")
+                ->where("table.contents.title LIKE ? OR table.contents.text LIKE ?", $like, $like);
+            $archive->query($select);
+            $terms = preg_split('/\s+/u', trim($q), -1, PREG_SPLIT_NO_EMPTY) ?: [];
             $results = [];
             while ($archive->next()) {
-                $desc = $archive->fields->excerpt ?? '';
-                if (!$desc) {
-                    $plain = strip_tags($archive->text);
-                    $desc = mb_strlen($plain) > 200 ? mb_substr($plain, 0, 200) . '…' : $plain;
+                $title = $archive->title;
+                $plain = preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($archive->excerpt)));
+                $titleHits = $bodyHits = 0;
+                $firstPos = false;
+                foreach ($terms as $term) {
+                    if (mb_strpos($title, $term) !== false) $titleHits++;
+                    if (($p = mb_strpos($plain, $term)) !== false) {
+                        $bodyHits++;
+                        if ($firstPos === false) $firstPos = $p;
+                    }
                 }
+                // 命中率 = 标题命中优先，其次正文命中次数，仅正文命中置后
+                $score = $titleHits * 1000 + $bodyHits;
+                if ($score === 0) continue;
+                // 以首个命中词为中心截取摘要（标题命中且无正文命中则取开头）
+                if ($firstPos === false) $firstPos = 0;
+                $start = max(0, $firstPos - 45);
+                $desc = mb_substr($plain, $start, 90);
+                if ($start > 0) $desc = '…' . $desc;
+                if ($start + 90 < mb_strlen($plain)) $desc .= '…';
                 $results[] = [
-                    'title'       => $archive->title,
+                    'title'       => $title,
                     'permalink'   => $archive->permalink,
                     'description' => $desc,
+                    'score'       => $score,
                 ];
             }
-            echo json_encode(['hits' => $results, 'keyword' => $archive->request->get('s', '')], JSON_UNESCAPED_UNICODE);
+            usort($results, fn($a, $b) => $b['score'] <=> $a['score']);
+            $results = array_slice($results, 0, 13);
+            echo json_encode(['hits' => $results, 'keyword' => $q], JSON_UNESCAPED_UNICODE);
             exit;
         }
     }
@@ -102,6 +130,18 @@ if (!function_exists('getTagsString')) {
             elseif (is_object($t) && isset($t->name)) $names[] = $t->name;
         }
         return implode(',', $names);
+    }
+}
+/* Typecho 编辑器粘贴外链时常丢一个斜杠，如 https:/xxx */
+if (!function_exists('getCoverUrl')) {
+    function getCoverUrl($archive) {
+        $cover = $archive->fields->cover;
+        if (!$cover) return '';
+        if (preg_match('#^https?:/#i', $cover) && !preg_match('#^https?://#i', $cover)) {
+            $cover = preg_replace('#^https?:/#i', '$0/', $cover);
+        }
+        if (preg_match('#^https?://#i', $cover) || $cover[0] === '/') return $cover;
+        return $archive->options->themeUrl($cover);
     }
 }
 

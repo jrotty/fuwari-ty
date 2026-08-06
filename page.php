@@ -6,12 +6,12 @@ $_wc = calcWordCount($this->content);
 $_rt = calcReadingTime($_wc);
 ob_start();
 ?>
-<meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->siteTitle; ?>">
+<meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->title; ?>">
 <?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="relative mb-4 flex min-h-32 w-full overflow-hidden rounded-[var(--radius-large)]">
   <div class="card-base relative z-10 w-full px-9 py-6">
-    <?php if ($this->fields->cover): ?>
+    <?php if (getCoverUrl($this)): ?>
     <style>
       .cover-wrap-fuwari-page {
         overflow: hidden;
@@ -24,7 +24,7 @@ ob_start();
       }
     </style>
     <div class="onload-animation cover-wrap-fuwari-page">
-      <img src="<?php echo $this->fields->cover; ?>" alt="<?php echo $this->title; ?>"
+      <img src="<?php echo getCoverUrl($this); ?>" alt="<?php echo $this->title; ?>"
            style="display: block; width: 100%; height: 300px; object-fit: cover;"
            loading="lazy">
     </div>

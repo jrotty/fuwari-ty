@@ -4,7 +4,7 @@
 $this->PAGE_TYPE = 'archives';
 ob_start();
 ?>
-<meta name="description" content="归档 - <?php echo $this->options->siteTitle; ?>">
+<meta name="description" content="归档 - <?php echo $this->options->title; ?>">
 <?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="card-base px-8 py-6">

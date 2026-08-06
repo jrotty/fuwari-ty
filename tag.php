@@ -4,7 +4,7 @@
 $this->PAGE_TYPE = 'tag';
 ob_start();
 ?>
-<meta name="description" content="标签: <?php $this->archiveTitle('tag', '', ''); ?> - <?php echo $this->options->siteTitle; ?>">
+<meta name="description" content="标签: <?php $this->archiveTitle('tag', '', ''); ?> - <?php echo $this->options->title; ?>">
 <?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="card-base mb-5 px-8 py-6">
