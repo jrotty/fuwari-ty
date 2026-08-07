@@ -10,8 +10,9 @@ $_cover = getCoverUrl($this);
             <span class="icon-[material-symbols--chevron-right-rounded] absolute hidden -translate-x-1 translate-y-0.5 text-[2rem] text-[var(--primary)] opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100 md:inline"></span>
         </a>
         <?php $this->need("modules/post-meta.php"); ?>
-        <div class="text-75 mb-3.5 pr-4 transition<?php if ($this->excerpt): ?> line-clamp-2 md:line-clamp-1<?php endif; ?>">
-            <?php echo $this->excerpt; ?>
+<?php $_excerpt = trim(preg_replace('/<[^>]+>/', '', $this->excerpt)); ?>
+        <div class="text-75 mb-3.5 pr-4 transition<?php if ($_excerpt): ?> line-clamp-2 md:line-clamp-1<?php endif; ?>">
+            <?php echo $_excerpt; ?>
         </div>
         <div class="flex gap-4 text-sm text-black/30 transition dark:text-white/30">
             <div class="flex items-center justify-center">

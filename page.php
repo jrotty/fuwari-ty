@@ -7,11 +7,13 @@ $_rt = calcReadingTime($_wc);
 ob_start();
 ?>
 <meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->title; ?>">
+<meta property="og:image" content="<?php echo getCoverUrl($this) ?: getOgImageUrl($this->options); ?>">
 <?php $this->PAGE_META = ob_get_clean(); ?>
 <?php ob_start(); ?>
 <div class="relative mb-4 flex min-h-32 w-full overflow-hidden rounded-[var(--radius-large)]">
   <div class="card-base relative z-10 w-full px-9 py-6">
-    <?php if (getCoverUrl($this)): ?>
+    <?php /* 封面暂不展示（og:image meta 仍可用）：
+    if (getCoverUrl($this)): ?>
     <style>
       .cover-wrap-fuwari-page {
         overflow: hidden;
@@ -28,7 +30,7 @@ ob_start();
            style="display: block; width: 100%; height: 300px; object-fit: cover;"
            loading="lazy">
     </div>
-    <?php endif; ?>
+    <?php endif; */ ?>
     <h1 class="text-3xl font-bold mb-6 text-black/90 dark:text-white/90"><?php echo $this->title; ?></h1>
     <div class="onload-animation mb-3 flex flex-row gap-5 text-black/30 transition dark:text-white/30">
       <div class="flex flex-row items-center">

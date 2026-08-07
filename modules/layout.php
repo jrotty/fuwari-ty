@@ -15,6 +15,14 @@ $this->CONTENT = $this->CONTENT ?? '';
     <title><?php echo $this->options->title; ?> - <?php if ($this->options->description()): ?> - <?php echo $this->options->description(); ?><?php endif; ?></title>
     <link rel="stylesheet" href="<?php $this->options->themeUrl('assets/dist/main.css'); ?>" />
     <link rel="icon" type="image/png" href="<?php echo $this->options->faviconSrc ? $this->options->themeUrl($this->options->faviconSrc) : $this->options->themeUrl('assets/images/favicon-light-192.png'); ?>" />
+    <link rel="manifest" href='data:application/manifest+json,<?php echo urlencode(json_encode(['name' => $this->options->title, 'short_name' => mb_substr($this->options->title, 0, 6), 'icons' => [['src' => getOgImageUrl($this->options), 'sizes' => 'any', 'type' => 'image/png']], 'theme_color' => '#ffffff', 'background_color' => '#ffffff', 'display' => 'standalone'])); ?>'>
+    <meta property="og:site_name" content="<?php echo $this->options->title; ?>">
+    <meta property="og:url" content="<?php echo $this->request->getRequestUrl(); ?>">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="<?php echo getOgImageUrl($this->options); ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="<?php echo getOgImageUrl($this->options); ?>">
+    <link rel="apple-touch-icon" href="<?php echo getOgImageUrl($this->options); ?>">
     <script>
       (function () {
         const DEFAULT_THEME = "<?php echo $this->options->colorScheme; ?>" || "auto";

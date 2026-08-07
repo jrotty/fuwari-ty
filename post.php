@@ -10,6 +10,7 @@ $this->PAGE_RT = $_rt;
 ob_start();
 ?>
 <meta name="description" content="<?php echo $this->title; ?> - <?php echo $this->options->title; ?>">
+<meta property="og:image" content="<?php echo getCoverUrl($this) ?: getOgImageUrl($this->options); ?>">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -32,9 +33,10 @@ ob_start();
     class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9"
   >
     <?php
+    /* 封面暂不展示（og:image meta 仍可用）：
     $_postCover = getCoverUrl($this);
+    if ($_postCover):
     ?>
-    <?php if ($_postCover): ?>
     <style>
       .cover-wrap-fuwari {
         overflow: hidden;
@@ -51,7 +53,7 @@ ob_start();
            style="display: block; width: 100%; height: 300px; object-fit: cover;"
            loading="lazy">
     </div>
-    <?php endif; ?>
+    <?php endif; */ ?>
     <!-- word count and reading time -->
     <div class="onload-animation mb-3 flex flex-row gap-5 text-black/30 transition dark:text-white/30">
       <div class="flex flex-row items-center">

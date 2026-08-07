@@ -135,13 +135,30 @@ if (!function_exists('getTagsString')) {
 /* Typecho 编辑器粘贴外链时常丢一个斜杠，如 https:/xxx */
 if (!function_exists('getCoverUrl')) {
     function getCoverUrl($archive) {
-        $cover = $archive->fields->cover;
-        if (!$cover) return '';
+        $cover = @$archive->fields->cover;
+        if (!$cover) {
+            $content = @$archive->content;
+            if ($content && preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $content, $m)) {
+                $cover = $m[1];
+            }
+            if (!$cover) return '';
+        }
         if (preg_match('#^https?:/#i', $cover) && !preg_match('#^https?://#i', $cover)) {
             $cover = preg_replace('#^https?:/#i', '$0/', $cover);
         }
         if (preg_match('#^https?://#i', $cover) || $cover[0] === '/') return $cover;
-        return $archive->options->themeUrl($cover);
+        $options = @$archive->options;
+        if (!$options) return $cover;
+        return \Typecho\Common::url($cover, $options->themeUrl);
+    }
+}
+/* 站点级分享卡片图：banner；og:image 需要绝对 URL */
+if (!function_exists('getOgImageUrl')) {
+    function getOgImageUrl($options) {
+        $src = @$options->bannerSrc;
+        if (!$src) return '';
+        if (preg_match('#^https?://#i', $src) || $src[0] === '/') return $src;
+        return \Typecho\Common::url($src, $options->themeUrl);
     }
 }
 
