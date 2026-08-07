@@ -7,9 +7,9 @@
     <div id="categories" class="collapse-wrapper overflow-hidden px-4" :class="isCollapsed ? 'collapsed' : ''" style="--collapsedHeight: 7.5rem">
         <?php $this->widget('Widget_Metas_Category_Rows')->to($_catWidget); ?>
         <?php while ($_catWidget->next()): ?>
-        <a href="<?php echo $_catWidget->permalink; ?>" class="flex w-full items-center justify-between rounded-lg px-3 py-1.5 font-medium text-[var(--btn-content)] transition hover:bg-[var(--btn-plain-bg-hover)] hover:text-[var(--primary)] active:bg-[var(--btn-plain-bg-active)]">
-            <span><?php echo $_catWidget->name; ?></span>
-            <span class="text-sm text-black/30 dark:text-white/30"><?php echo $_catWidget->count; ?></span>
+        <a href="<?php echo $_catWidget->permalink; ?>" class="flex w-full items-center justify-between rounded-lg px-3 py-1.5 font-medium text-neutral-700 transition hover:bg-[var(--btn-plain-bg-hover)] hover:pl-3 hover:text-[var(--primary)] active:bg-[var(--btn-plain-bg-active)] dark:text-neutral-300 dark:hover:text-[var(--primary)]">
+            <span class="overflow-hidden text-ellipsis whitespace-nowrap"><?php echo $_catWidget->name; ?></span>
+            <span class="ml-4 flex h-7 min-w-[2rem] items-center justify-center rounded-lg bg-[var(--btn-regular-bg)] px-2 text-sm font-bold text-[var(--btn-content)] transition dark:bg-[var(--primary)] dark:text-white"><?php echo $_catWidget->count; ?></span>
         </a>
         <?php endwhile; ?>
     </div>

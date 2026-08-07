@@ -1,34 +1,63 @@
 <?php
-$_socialIconMap = [
-    'github.com'    => 'mdi--github',
-    'twitter.com'   => 'streamline-logos--x-twitter-logo-block',
-    'x.com'         => 'streamline-logos--x-twitter-logo-block',
-    'weibo.com'     => 'simple-icons--sinaweibo',
-    'zhihu.com'     => 'ant-design--zhihu-circle-filled',
-    'bilibili.com'  => 'streamline-logos--bilibili-logo-block',
-    'douban.com'    => 'streamline-logos--douban-logo-block',
-    'tiktok.com'    => 'streamline-logos--tiktok-logo-block',
-    'douyin.com'    => 'streamline-logos--tiktok-logo-block',
-    'telegram.org'  => 'ic--baseline-telegram',
-    't.me'          => 'ic--baseline-telegram',
-    'facebook.com'  => 'ic--baseline-facebook',
-    'instagram.com' => 'ant-design--instagram-filled',
-    'linkedin.com'  => 'entypo-social--linkedin-with-circle',
-    'youtube.com'   => 'entypo-social--youtube-with-circle',
-    'steamcommunity.com' => 'ri--steam-fill',
-    'gitlab.com'    => 'fa6-brands--square-gitlab',
-    'slack.com'     => 'ant-design--slack-circle-filled',
-    'discord.com'   => 'ic--baseline-discord',
-    'discord.gg'    => 'ic--baseline-discord',
-    'qq.com'        => 'fa6-brands--qq',
-];
-
 function _fuwariSocialIcon($url) {
     $host = parse_url($url, PHP_URL_HOST);
-    if (!$host) return 'tabler--external-link';
-    $host = strtolower(ltrim($host, 'www.'));
-    global $_socialIconMap;
-    return $_socialIconMap[$host] ?? 'tabler--external-link';
+    $host = strtolower(ltrim((string)$host, 'www.'));
+    $map = [
+        'github.com'    => 'fa7-brands--github',
+        'twitter.com'   => 'fa7-brands--x-twitter',
+        'x.com'         => 'fa7-brands--x-twitter',
+        'weibo.com'     => 'fa7-brands--weibo',
+        'zhihu.com'     => 'fa7-brands--zhihu',
+        'bilibili.com'  => 'fa7-brands--bilibili',
+        'douban.com'    => 'fa7-brands--douban',
+        'tiktok.com'    => 'fa7-brands--tiktok',
+        'douyin.com'    => 'fa7-brands--tiktok',
+        'telegram.org'  => 'fa7-brands--telegram',
+        't.me'          => 'fa7-brands--telegram',
+        'facebook.com'  => 'fa7-brands--facebook',
+        'instagram.com' => 'fa7-brands--instagram',
+        'linkedin.com'  => 'fa7-brands--linkedin',
+        'youtube.com'   => 'fa7-brands--youtube',
+        'steamcommunity.com' => 'fa7-brands--steam',
+        'gitlab.com'    => 'fa7-brands--gitlab',
+        'slack.com'     => 'fa7-brands--slack',
+        'discord.com'   => 'fa7-brands--discord',
+        'discord.gg'    => 'fa7-brands--discord',
+        'qq.com'        => 'fa7-brands--qq',
+        'weixin.qq.com' => 'fa7-brands--weixin',
+        'gitee.com'     => 'fa7-brands--gitee',
+        'codeberg.org'  => 'fa7-brands--codeberg',
+    ];
+    return $map[$host] ?? 'tabler--external-link';
+}
+
+function _fuwariSocialPlatformIcon($name) {
+    $map = [
+        'github'    => 'fa7-brands--github',
+        'twitter'   => 'fa7-brands--x-twitter',
+        'x'         => 'fa7-brands--x-twitter',
+        'weibo'     => 'fa7-brands--weibo',
+        'zhihu'     => 'fa7-brands--zhihu',
+        'bilibili'  => 'fa7-brands--bilibili',
+        'douban'    => 'fa7-brands--douban',
+        'tiktok'    => 'fa7-brands--tiktok',
+        'douyin'    => 'fa7-brands--tiktok',
+        'telegram'  => 'fa7-brands--telegram',
+        'facebook'  => 'fa7-brands--facebook',
+        'instagram' => 'fa7-brands--instagram',
+        'linkedin'  => 'fa7-brands--linkedin',
+        'youtube'   => 'fa7-brands--youtube',
+        'steam'     => 'fa7-brands--steam',
+        'gitlab'    => 'fa7-brands--gitlab',
+        'slack'     => 'fa7-brands--slack',
+        'discord'   => 'fa7-brands--discord',
+        'qq'        => 'fa7-brands--qq',
+        'weixin'    => 'fa7-brands--weixin',
+        'gitee'     => 'fa7-brands--gitee',
+        'codeberg'  => 'fa7-brands--codeberg',
+        'rss'       => 'streamline-plump--rss-square-solid',
+    ];
+    return $map[$name] ?? null;
 }
 ?>
 <div class="card-base p-3">
@@ -47,12 +76,22 @@ function _fuwariSocialIcon($url) {
     <?php $_links = array_filter(explode("\n", str_replace("\r", '', $this->options->socialLinks))); ?>
     <?php if ($_links): ?>
     <div class="mt-3 flex flex-wrap justify-center gap-2">
-      <?php foreach ($_links as $_url): ?>
-      <?php $_url = trim($_url); if (!$_url) continue; ?>
-      <a href="<?php echo $_url; ?>" target="_blank" rel="noopener"
-         class="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 transition hover:bg-[var(--primary)] hover:text-white active:scale-90"
-         aria-label="Social link">
-        <span class="icon-[<?php echo _fuwariSocialIcon($_url); ?>] text-lg"></span>
+      <?php foreach ($_links as $_line): ?>
+      <?php $_line = trim($_line); if (!$_line) continue; ?>
+      <?php $_firstColon = strpos($_line, ':'); ?>
+      <?php $_protoPos = strpos($_line, '://'); ?>
+      <?php if ($_firstColon !== false && ($_protoPos === false || $_firstColon < $_protoPos)): ?>
+      <?php $_parts = explode(':', $_line, 2); $_icon = trim($_parts[0]); $_url = trim($_parts[1]); ?>
+      <?php if (strpos($_icon, '-') === false && strpos($_icon, ':') === false): ?>
+      <?php $_icon = _fuwariSocialPlatformIcon(strtolower($_icon)) ?? 'tabler--external-link'; ?>
+      <?php endif; ?>
+      <?php else: ?>
+      <?php $_icon = _fuwariSocialIcon($_line); $_url = $_line; ?>
+      <?php endif; ?>
+      <?php if (!$_url) continue; ?>
+      <a href="<?php echo $_url; ?>" target="_blank" rel="me noopener" aria-label="Social link"
+         class="btn-regular h-10 w-10 rounded-lg active:scale-90">
+        <span class="icon-[<?php echo $_icon; ?>] text-[1.5rem]"></span>
       </a>
       <?php endforeach; ?>
     </div>
