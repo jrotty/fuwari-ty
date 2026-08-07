@@ -17,3 +17,6 @@ export function mountDisplaySettings(container: HTMLElement) {
 export function mountToc(container: HTMLElement) {
   render(<Toc />, container);
 }
+export function clearToc(container: HTMLElement) {
+  render(null, container);
+}

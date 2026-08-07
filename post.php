@@ -1,10 +1,12 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
 <?php $this->need("functions.php"); ?>
 <!-- POST.PHP LOADED -->
-<?php 
+<?php
 $this->PAGE_TYPE = 'post';
+countViews($this);
 $_wc = calcWordCount($this->content);
 $_rt = calcReadingTime($_wc);
+$_vc = getPostViews($this);
 $this->PAGE_WC = $_wc;
 $this->PAGE_RT = $_rt;
 ob_start();
@@ -71,6 +73,14 @@ ob_start();
           <span class="icon-[material-symbols--schedule-outline-rounded]"></span>
         </div>
         <div class="text-sm"><?php echo $_rt; ?> 分钟</div>
+      </div>
+      <div class="flex flex-row items-center">
+        <div
+          class="mr-2 flex h-6 w-6 items-center justify-center rounded-md bg-black/5 text-black/50 transition dark:bg-white/10 dark:text-white/50"
+        >
+          <span class="icon-[material-symbols--visibility-outline-rounded]"></span>
+        </div>
+        <div class="text-sm"><?php echo $_vc; ?> 次查看</div>
       </div>
     </div>
     <!-- title -->

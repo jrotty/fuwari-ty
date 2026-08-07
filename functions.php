@@ -7,6 +7,17 @@ try {
     if (!\Typecho\Router::get('archives_list')) {
         \Utils\Helper::addRoute('archives_list', '/archives/', 'Widget_Archive', 'render', 'index');
     }
+    // RSS/Atom 订阅路由：/rss.xml /atom.xml feed 端点 + /rss /atom 订阅说明页
+    foreach ([
+        'feed_xml_rss'    => '/rss.xml',
+        'feed_xml_atom'   => '/atom.xml',
+        'feed_info_rss'   => '/rss',
+        'feed_info_atom'  => '/atom',
+    ] as $_route => $_path) {
+        if (!\Typecho\Router::get($_route)) {
+            \Utils\Helper::addRoute($_route, $_path, 'Widget_Archive', 'render', 'index');
+        }
+    }
 } catch (\Throwable $e) {
     // ignore
 }
@@ -17,6 +28,14 @@ if (!function_exists('themeInit')) {
     {
         if ('archives_list' === $archive->parameter->type) {
             $archive->setThemeFile('archives.php');
+        }
+
+        /* ---- RSS/Atom 订阅路由: 按路线 type 分派 modules 模板 ---- */
+        $rt = $archive->parameter->type;
+        if (in_array($rt, ['feed_xml_rss', 'feed_xml_atom'], true)) {
+            $archive->setThemeFile('modules/feeds.php');
+        } elseif (in_array($rt, ['feed_info_rss', 'feed_info_atom'], true)) {
+            $archive->setThemeFile('modules/feed-info.php');
         }
 
         /* ---- AJAX 搜索: /search/[keyword]/?ajax=1 返回 JSON ---- */
@@ -159,6 +178,42 @@ if (!function_exists('getOgImageUrl')) {
         if (!$src) return '';
         if (preg_match('#^https?://#i', $src) || $src[0] === '/') return $src;
         return \Typecho\Common::url($src, $options->themeUrl);
+    }
+}
+
+/* ---- 浏览量 ---- */
+// 存储于 typecho_fields 表（custom field）
+// themePostFields 的 views 输入框可后台手改；countViews 负责自动 +1。
+if (!function_exists('getPostViews')) {
+    function getPostViews($archive) {
+        $v = @$archive->fields->views;
+        return is_numeric($v) ? (int)$v : 0;
+    }
+}
+/* 仅在首页索引循环里每篇调用一次（post.php 用 post-meta 里的 getPostViews，不再自增），
+   避免归档索引因每次渲染都 UPDATE 造成的 N+1。
+   浏览量存于 typecho_fields 表的 views 字段：incrIntField 自增，管理员可在后台 themePostFields 手改。 */
+if (!function_exists('countViews')) {
+    function countViews($archive) {
+        if (!defined('_fuwari_counted_')) {
+            define('_fuwari_counted_', true);
+            try {
+                $archive->incrIntField('views', 1, $archive->cid);
+            } catch (\Throwable $e) {
+                // ignore
+            }
+        }
+    }
+}
+
+/* ---- 后台文章编辑页：封面图字段（保存为 fields[cover]，getCoverUrl 读取） ---- */
+if (!function_exists('themePostFields')) {
+    function themePostFields($layout) {
+        $Text = 'Typecho\Widget\Helper\Form\Element\Text';
+        $cover = new $Text('cover', null, '', '封面图 URL', '留空则自动使用正文第一张图片，支持外链或相对路径');
+        $layout->addItem($cover);
+        $views = new $Text('views', null, '', '浏览量', '');
+        $layout->addItem($views);
     }
 }
 

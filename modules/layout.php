@@ -23,6 +23,7 @@ $this->CONTENT = $this->CONTENT ?? '';
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="<?php echo getOgImageUrl($this->options); ?>">
     <link rel="apple-touch-icon" href="<?php echo getOgImageUrl($this->options); ?>">
+    <link rel="alternate" type="application/rss+xml" title="<?php echo $this->options->authorName; ?>" href="<?php echo \Typecho\Common::url('/rss.xml', $this->options->index); ?>" />
     <script>
       (function () {
         const DEFAULT_THEME = "<?php echo $this->options->colorScheme; ?>" || "auto";
@@ -110,25 +111,26 @@ $this->CONTENT = $this->CONTENT ?? '';
         </div>
         <?php $this->need("modules/widgets/back-to-top.php"); ?>
       </div>
+    </div>
 
-      <?php if ($this->options->tocEnable): ?>
-      <div class="absolute z-0 hidden w-full 2xl:block">
-        <div class="relative mx-auto max-w-[var(--page-width)]">
-          <div id="toc-wrapper" class="absolute -right-[var(--toc-width)] top-0 hidden w-[var(--toc-width)] items-center transition lg:block<?php if ($this->options->bannerEnable): ?> toc-hide<?php endif; ?>">
-            <div id="toc-inner-wrapper" class="hide-scrollbar fixed top-14 h-[calc(100vh_-_20rem)] w-[var(--toc-width)] overflow-x-hidden overflow-y-scroll">
-              <div id="toc" class="transition-swup-fade h-full w-full">
-                <div class="h-8 w-full"></div>
-                <div class="toc"></div>
-                <div class="h-8 w-full"></div>
-              </div>
+    <?php if ($this->options->tocEnable): ?>
+    <!-- 目录独立于 #content-area-wrapper（其 pointer-events-none 会挡住目录的点击/滚动），与 body 同级可交互 -->
+    <div class="absolute z-0 hidden w-full 2xl:block">
+      <div class="relative mx-auto max-w-[var(--page-width)]">
+        <div id="toc-wrapper" class="absolute -right-[var(--toc-width)] top-0 hidden w-[var(--toc-width)] items-center transition lg:block<?php if ($this->options->bannerEnable): ?> toc-hide<?php endif; ?>">
+          <div id="toc-inner-wrapper" class="hide-scrollbar fixed top-14 h-[calc(100vh_-_20rem)] w-[var(--toc-width)] overflow-x-hidden overflow-y-scroll">
+            <div id="toc" class="transition-swup-fade h-full w-full">
+              <div class="h-8 w-full"></div>
+              <div class="toc"></div>
+              <div class="h-8 w-full"></div>
             </div>
           </div>
         </div>
       </div>
-      <?php else: ?>
-      <div id="toc"></div>
-      <?php endif; ?>
     </div>
+    <?php else: ?>
+    <div id="toc"></div>
+    <?php endif; ?>
 
     <div id="page-height-extend" class="hidden h-[300vh]"></div>
     <script type="module" src="<?php $this->options->themeUrl('assets/dist/main.js'); ?>"></script>

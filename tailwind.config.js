@@ -59,6 +59,11 @@ export default {
         "icon-[material-symbols--readiness-score-outline-rounded]",
         "icon-[material-symbols--ar-stickers-outline]",
         "icon-[material-symbols--close-rounded]",
+        // RSS/Atom 订阅页图标
+        "icon-[material-symbols--rss-feed-rounded]",
+        "icon-[material-symbols--link-rounded]",
+        "icon-[material-symbols--article-outline-rounded]",
+        "icon-[material-symbols--help-outline-rounded]",
     ],
     theme: {
         extend: {

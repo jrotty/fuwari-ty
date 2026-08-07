@@ -47,11 +47,16 @@
   
     counter-reset: line;
     span.line {
+      @apply block whitespace-pre;
       &:before {
-        @apply text-white/25 mr-4 w-4 inline-block;
+        @apply inline-block select-none;
+        min-width: 2ch;
+        margin-right: 1.5rem;
+        text-align: right;
+        color: var(--btn-content);
+        opacity: 0.4;
         content: counter(line);
         counter-increment: line;
-        direction: rtl;
       }
       &:last-child:empty, &:last-child:has(> span:empty:only-child) {
         display: none;
@@ -75,54 +80,125 @@
     &:after {
         content: none !important;
     }
-
-    /* 禁用行号计数器（针对 span.line） */
-    counter-reset: none !important;
-    & span.line:before {
-        content: none !important;
-        counter-increment: none !important;
-        display: none !important;  /* 隐藏行号 */
-    }
-    & span.line:last-child:empty,
-    & span.line:last-child:has(> span:empty:only-child) {
-        display: block !important;
-    }
   }
   
 
-  .copy-btn {
-    all: initial;
-    @apply btn-regular-dark opacity-0 shadow-lg shadow-black/50 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
-  }
-  .custom-md pre:hover .copy-btn {
-    opacity: 1;
-  }
-
-  .copy-btn-icon {
-    @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 fill-white pointer-events-none;
-  }
-  .copy-btn .copy-icon {
-    @apply opacity-100 fill-white dark:fill-white/75;
-  }
-  .copy-btn.success .copy-icon {
-    @apply opacity-0 fill-[var(--deep-text)]
-  }
-  .copy-btn .success-icon {
-    @apply opacity-0 fill-white;
-  }
-  .copy-btn.success .success-icon {
-    @apply opacity-100
-  }
-
   pre {
     @apply my-4 rounded-xl overflow-x-auto;
-    background: #f6f8fa;
+    background: var(--codeblock-bg);
     ::selection {
       @apply bg-[var(--codeblock-selection)];
     }
   }
-  .dark pre {
-    background: #161b22;
+
+  /* Mizuki/Expressive-Code 风格代码块：右上角默认语言标签，悬停改显复制 + 收起/展开；长块折叠 */
+  .md-code-frame {
+    @apply my-4 relative overflow-x-auto rounded-xl;
+    background: var(--codeblock-bg);
+    border: 1px solid var(--line-divider);
+
+    > pre {
+      @apply my-0 rounded-none border-0;
+      background: transparent;
+      border-radius: 0 !important;
+    }
+
+    /* 右上角控件通用：方形小按钮 */
+    .copy-btn,
+    .collapse-toggle {
+      all: initial;
+      position: absolute;
+      z-index: 2;
+      top: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      background: var(--btn-regular-bg);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: opacity 0.3s, background-color 0.15s;
+      opacity: 0;
+
+      &:active {
+        transform: scale(0.9);
+      }
+      &:hover {
+        background: var(--btn-regular-bg-hover);
+      }
+
+      .ctrl-icon {
+        width: 1.125rem;
+        height: 1.125rem;
+        fill: var(--btn-content);
+        pointer-events: none;
+        display: block;
+      }
+    }
+    .copy-btn {
+      right: 0.75rem;
+    }
+    .collapse-toggle {
+      right: 3.25rem;
+    }
+
+    /* 右上角语言标签：默认显示，悬停时隐藏让位给复制/收起按钮 */
+    .md-code-lang {
+      position: absolute;
+      z-index: 2;
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.35rem 0.6rem;
+      font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--btn-content);
+      background: var(--btn-regular-bg);
+      border-radius: 0.5rem;
+      pointer-events: none;
+      user-select: none;
+      transition: opacity 0.3s;
+      opacity: 1;
+    }
+  }
+
+  /* 默认：只显示语言标签；悬停：隐藏标签，显示复制 + 收起按钮 */
+  .md-code-frame .copy-btn,
+  .md-code-frame .collapse-toggle {
+    opacity: 0;
+  }
+  .md-code-frame:hover .copy-btn,
+  .md-code-frame:hover .collapse-toggle {
+    opacity: 1;
+  }
+  .md-code-frame:hover .md-code-lang {
+    opacity: 0;
+  }
+
+  /* 长代码块折叠（≥20 行）：折叠态限高 + 底部淡出 */
+  .md-code-frame.collapsible {
+    > pre {
+      transition: max-height 0.25s ease;
+    }
+    &.collapsed {
+      > pre {
+        max-height: 14rem;
+        overflow: hidden;
+      }
+      > pre::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 4.5rem;
+        background: linear-gradient(to bottom, transparent, var(--codeblock-bg));
+        pointer-events: none;
+      }
+    }
   }
 
   .expressive-code {
@@ -131,17 +207,6 @@
       @apply bg-[var(--codeblock-selection)];
     }
   }
-
-  /* highlight.js token colors — light (github theme) + dark overrides */
-  .dark pre code .hljs { color: #c9d1d9; }
-  .dark pre code .hljs-keyword,
-  .dark pre code .hljs-selector-tag { color: #ff7b72; }
-  .dark pre code .hljs-string { color: #a5d6ff; }
-  .dark pre code .hljs-number { color: #79c0ff; }
-  .dark pre code .hljs-comment { color: #8b949e; }
-  .dark pre code .hljs-title { color: #d2a8ff; }
-  .dark pre code .hljs-built_in { color: #ffa657; }
-  .dark pre code .hljs-attr { color: #79c0ff; }
 
 
   ul, ol {
@@ -172,3 +237,41 @@
   }
 
 }
+
+/* highlight.js dark token palette — GitHub Dark on the --codeblock-bg block.
+   Scoped as .dark ancestor (the .dark class lives on <html>, above .custom-md). */
+.dark .custom-md pre code .hljs {
+  color: #c9d1d9;
+  background: transparent; /* keep github.css light `background:#fff` from leaking in */
+}
+.dark .custom-md pre code .hljs-keyword,
+.dark .custom-md pre code .hljs-selector-tag,
+.dark .custom-md pre code .hljs-doctag,
+.dark .custom-md pre code .hljs-template-tag,
+.dark .custom-md pre code .hljs-template-variable,
+.dark .custom-md pre code .hljs-type,
+.dark .custom-md pre code .hljs-variable.language_ { color: #ff7b72; }
+.dark .custom-md pre code .hljs-string,
+.dark .custom-md pre code .hljs-attr,
+.dark .custom-md pre code .hljs-attribute,
+.dark .custom-md pre code .hljs-meta .hljs-string,
+.dark .custom-md pre code .hljs-regexp,
+.dark .custom-md pre code .hljs-link { color: #a5d6ff; }
+.dark .custom-md pre code .hljs-number,
+.dark .custom-md pre code .hljs-literal,
+.dark .custom-md pre code .hljs-symbol,
+.dark .custom-md pre code .hljs-bullet { color: #79c0ff; }
+.dark .custom-md pre code .hljs-comment,
+.dark .custom-md pre code .hljs-quote { color: #8b949e; }
+.dark .custom-md pre code .hljs-title,
+.dark .custom-md pre code .hljs-title.class_,
+.dark .custom-md pre code .hljs-title.function_,
+.dark .custom-md pre code .hljs-section,
+.dark .custom-md pre code .hljs-name { color: #d2a8ff; }
+.dark .custom-md pre code .hljs-built_in,
+.dark .custom-md pre code .hljs-variable,
+.dark .custom-md pre code .hljs-property,
+.dark .custom-md pre code .hljs-meta { color: #ffa657; }
+.dark .custom-md pre code .hljs-addition { background: rgba(46,160,67,.15); color: #aff5b4; }
+.dark .custom-md pre code .hljs-deletion { background: rgba(248,81,73,.15); color: #ffdcd7; }
+

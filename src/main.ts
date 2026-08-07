@@ -23,7 +23,7 @@ import SwupPreloadPlugin from "@swup/preload-plugin";
 import SwupScrollPlugin from "@swup/scroll-plugin";
 import SwupScriptsPlugin from "@swup/scripts-plugin";
 
-import { mountSearch, mountDisplaySettings, mountToc } from "./preact";
+import { mountSearch, mountDisplaySettings, mountToc, clearToc } from "./preact";
 import {
   OverlayScrollbars,
   // ScrollbarsHidingPlugin,
@@ -93,6 +93,25 @@ function getThemeConfig(): ThemeConfig | undefined {
 const themeConfig = getThemeConfig();
 console.log("主题配置：", themeConfig);
 
+// 按当前页是否含文章正文（#content）同步侧栏目录：
+// - 有 #content（文章）：显示 #toc-wrapper 并重挂一次目录（清空旧 headings，杜绝"窜台"）。
+// - 无 #content（首页/分类/标签/归档）：卸载目录并隐藏 wrapper。
+// #toc-wrapper 在 swup 的 main 容器之外，切页不会自动销毁，必须在这里显式管理生命周期。
+function updateToc() {
+  const wrapper = document.getElementById("toc-wrapper");
+  const tocContainer = document.querySelector(".toc");
+  if (!wrapper) return;
+  const hasContent = !!document.getElementById("content");
+  wrapper.style.display = hasContent ? "" : "none";
+  if (tocContainer) {
+    if (hasContent) {
+      mountToc(tocContainer as HTMLElement);
+    } else {
+      clearToc(tocContainer as HTMLElement);
+    }
+  }
+}
+
 function mountWidgets() {
   console.log("Mounting widgets...");
   const counterContainer = document.querySelector("#counter");
@@ -109,11 +128,8 @@ function mountWidgets() {
   if (displaySettingsContainer) {
     mountDisplaySettings(displaySettingsContainer as HTMLElement);
   }
-  //   挂载目录
-  const tocContainer = document.querySelector(".toc");
-  if (tocContainer) {
-    mountToc(tocContainer as HTMLElement);
-  }
+  //   挂载目录（结构上把挂载交给 updateToc，避免与初始逻辑分叉）
+  updateToc();
 }
 
 // 初始化 admonition 笔记块（输出结构匹配原版 rehype-component-admonition）
@@ -155,32 +171,156 @@ function initNoteBlocks() {
   });
 }
 
-// 为 <pre><code> 注入复制按钮
-function initCopyButtons() {
-  document.querySelectorAll(".custom-md pre").forEach(function (pre) {
-    if (pre.querySelector(".copy-btn")) return;
+// 单个图标的方形按钮
+function makeIconButton(className: string, ariaLabel: string, path: string) {
+  const btn = document.createElement("button");
+  btn.className = className;
+  btn.setAttribute("aria-label", ariaLabel);
+  btn.innerHTML =
+    '<svg class="ctrl-icon" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg"><path d="' +
+    path +
+    '"/></svg>';
+  return btn;
+}
 
-    const code = pre.querySelector("code");
+const ICON_COPY = "M368.37-237.37q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-474.26q0-34.48 24.26-58.74 24.26-24.26 58.74-24.26h378.26q34.48 0 58.74 24.26 24.26 24.26 24.26 58.74v474.26q0 34.48-24.26 58.74-24.26 24.26-58.74 24.26H368.37Zm0-83h378.26v-474.26H368.37v474.26Zm-155 238q-34.48 0-58.74-24.26-24.26-24.26-24.26-58.74v-515.76q0-17.45 11.96-29.48 11.97-12.02 29.33-12.02t29.54 12.02q12.17 12.03 12.17 29.48v515.76h419.76q17.45 0 29.48 11.96 12.02 11.97 12.02 29.33t-12.02 29.54q-12.03 12.17-29.48 12.17H213.37Zm155-238v-474.26 474.26Z";
+const ICON_CHECK =
+  "m389-377.13 294.7-294.7q12.58-12.67 29.52-12.67 16.93 0 29.61 12.67 12.67 12.68 12.67 29.53 0 16.86-12.28 29.14L419.07-288.41q-12.59 12.67-29.52 12.67-16.94 0-29.62-12.67L217.41-430.93q-12.67-12.68-12.79-29.45-.12-16.77 12.55-29.45 12.68-12.67 29.62-12.67 16.93 0 29.28 12.67L389-377.13Z";
+const ICON_CHEVRON_UP = "m480-360 160-160H320l160 160Z";
+const ICON_CHEVRON_DOWN = "m480-600 160-160H320l160 160Z";
+
+// 为代码块包一层外框：右上角默认显示语言标签，悬停改显复制 + 收起/展开；≥20 行默认折叠。
+function decorateCodeBlocks() {
+  document.querySelectorAll(".custom-md pre").forEach(function (pre) {
+    if (pre.closest(".md-code-frame")) return;
+
+    const code = pre.querySelector<HTMLElement>("code");
     if (!code) return;
 
-    const btn = document.createElement("button");
-    btn.className = "copy-btn";
-    btn.innerHTML =
-      '<svg class="copy-btn-icon copy-icon" viewBox="0 0 24 24"><path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/></svg>' +
-      '<svg class="copy-btn-icon success-icon" viewBox="0 0 24 24"><path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>';
+    // 语言标签：hljs 加的 language-X / lang-X
+    const lang = (code.className.match(/(?:lang|language)-([^\s]+)/) || [])[1] || "";
 
-    btn.addEventListener("click", function () {
-      const text = code.textContent || "";
+    // 行数（wrapCodeLines 已生成 .line）：≥20 行视为长块，默认折叠
+    const lineCount = code.querySelectorAll("span.line").length;
+    const isLong = lineCount >= 20;
+
+    // 外框
+    const frame = document.createElement("div");
+    frame.className = "md-code-frame";
+    if (isLong) frame.classList.add("collapsible", "collapsed");
+
+    // 语言标签（默认显示）
+    const langLabel = document.createElement("span");
+    langLabel.className = "md-code-lang";
+    langLabel.textContent = lang || "text";
+
+    // 复制按钮（单图标；成功时换对勾）
+    const copyBtn = makeIconButton("copy-btn", "Copy", ICON_COPY);
+    copyBtn.addEventListener("click", function () {
+      const lines = code.querySelectorAll(".line");
+      const text = lines.length
+        ? Array.from(lines)
+            .map((l) => (l as HTMLElement).innerText || (l as HTMLElement).textContent || "")
+            .join("\n")
+            .replace(/\n+$/, "")
+        : code.textContent || "";
       navigator.clipboard.writeText(text).then(function () {
-        btn.classList.add("success");
-        setTimeout(function () { btn.classList.remove("success"); }, 2000);
+        copyBtn.classList.add("success");
+        copyBtn.querySelector(".ctrl-icon path")?.setAttribute("d", ICON_CHECK);
+        setTimeout(function () {
+          copyBtn.classList.remove("success");
+          copyBtn.querySelector(".ctrl-icon path")?.setAttribute("d", ICON_COPY);
+        }, 2000);
       });
     });
 
-    // pre 容器设为 relative 使按钮可以 absolute 定位
-    (pre as HTMLElement).style.position = "relative";
-    pre.appendChild(btn);
+    frame.appendChild(langLabel);
+    frame.appendChild(copyBtn);
+
+    // 收起/展开按钮（长块才有）
+    if (isLong) {
+      const collapseBtn = makeIconButton("collapse-toggle", "Collapse", ICON_CHEVRON_UP);
+      collapseBtn.addEventListener("click", function () {
+        const collapsed = frame.classList.toggle("collapsed");
+        collapseBtn.querySelector(".ctrl-icon path")?.setAttribute(
+          "d",
+          collapsed ? ICON_CHEVRON_UP : ICON_CHEVRON_DOWN,
+        );
+        collapseBtn.setAttribute("aria-label", collapsed ? "Expand" : "Collapse");
+      });
+      frame.appendChild(collapseBtn);
+    }
+
+    // 把 pre 移进外框，控件在最前
+    pre.parentNode?.insertBefore(frame, pre);
+    frame.appendChild(pre);
   });
+}
+
+// 将 hljs 已高亮的 <code> 按行包成 <span class="line">（保留 token span，跨行 token 按行复制）
+function wrapCodeLines(code: HTMLElement) {
+  if (code.querySelector("span.line")) return;
+
+  const lineArrays: (Node[])[] = [];
+  let lineIdx = 0;
+
+  // 元素：返回其内容按行拆分后的分片数组（每行一个浅克隆，跨行 token 被复制到多行）
+  function splitElement(el: Element): Node[][] {
+    if (el.childNodes.length === 0) return [[]];
+    let base = 0;
+    const chunks: Node[][] = [];
+    for (const child of Array.from(el.childNodes)) {
+      let cc: Node[][];
+      if (child.nodeType === Node.TEXT_NODE) {
+        const parts = (child.textContent || "").split("\n");
+        cc = parts.map((t) => [document.createTextNode(t)] as Node[]);
+      } else {
+        cc = splitElement(child as Element);
+      }
+      cc.forEach((chunk, i) => {
+        const g = base + i;
+        (chunks[g] = chunks[g] || []).push(...chunk);
+      });
+      // 只按实际换行数推进（无换行的文本/子元素仍停留在当前行）
+      base += Math.max(cc.length - 1, 0);
+    }
+    return chunks.map((chunk): Node[] => {
+      const clone = el.cloneNode(false) as HTMLElement;
+      if (chunk.length) clone.append(...chunk);
+      return [clone];
+    });
+  }
+
+  function put(g: number, nodes: Node[]) {
+    (lineArrays[g] = lineArrays[g] || []);
+    lineArrays[g].push(...nodes);
+  }
+
+  function walk(node: Node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parts = (node.textContent || "").split("\n");
+      parts.forEach((t, i) => {
+        if (t) put(lineIdx + i, [document.createTextNode(t)]);
+      });
+      lineIdx += Math.max(parts.length - 1, 0);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const chunks = splitElement(node as Element);
+      chunks.forEach((chunk, i) => put(lineIdx + i, chunk));
+      lineIdx += Math.max(chunks.length - 1, 0);
+    }
+  }
+
+  Array.from(code.childNodes).forEach(walk);
+
+  code.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  lineArrays.forEach((nodes) => {
+    const span = document.createElement("span");
+    span.className = "line";
+    if (nodes.length) span.append(...nodes);
+    frag.appendChild(span);
+  });
+  code.appendChild(frag);
 }
 
 // 为标题注入 id 和 anchor 链接（匹配 rehypeSlug + rehypeAutolinkHeadings 效果）
@@ -335,9 +475,8 @@ function init() {
   loadHue();
   initCustomScrollbar();
   initNoteBlocks();
-  initCopyButtons();
-  initHeadingAnchors();
   initCodeHighlight();
+  initHeadingAnchors();
   showBanner();
 }
 
@@ -347,6 +486,10 @@ function initCodeHighlight() {
     if (block.classList.contains("hljs")) return; // already highlighted
     hljs.highlightElement(block);
   });
+  document.querySelectorAll(".custom-md pre code").forEach((block) => {
+    if (block instanceof HTMLElement) wrapCodeLines(block);
+  });
+  decorateCodeBlocks();
 }
 /* Load settings when entering the site */
 
@@ -387,10 +530,10 @@ const setup = () => {
 
     initCustomScrollbar();
     initNoteBlocks();
-    initCopyButtons();
     initHeadingAnchors();
     initCodeHighlight();
     loadButtonScript();
+    updateToc();
   });
   swup.hooks.on("visit:start", (visit) => {
     // toggle is-home class based on target URL (matching original Fuwari pattern)

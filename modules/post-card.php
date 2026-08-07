@@ -14,17 +14,18 @@ $_cover = getCoverUrl($this);
         <div class="text-75 mb-3.5 pr-4 transition<?php if ($_excerpt): ?> line-clamp-2 md:line-clamp-1<?php endif; ?>">
             <?php echo $_excerpt; ?>
         </div>
-        <div class="flex gap-4 text-sm text-black/30 transition dark:text-white/30">
-            <div class="flex items-center justify-center">
-                <span class="icon-[material-symbols--readiness-score-outline-rounded] mr-1 text-lg"></span>
-                0
-            </div>
-            <div>|</div>
-            <div class="flex items-center justify-center">
-                <span class="icon-[material-symbols--ar-stickers-outline] mr-1 text-lg"></span>
-                0
-            </div>
+        <?php
+        $_tagObjs = is_array($this->tags) ? array_slice($this->tags, 0, 3) : [];
+        if (count($_tagObjs) > 0):
+        ?>
+        <div class="mt-2 flex flex-wrap justify-start gap-1.5">
+            <?php foreach ($_tagObjs as $_to): ?>
+            <a href="<?php echo $_to['permalink']; ?>" class="link-lg transition text-50 text-xs font-medium px-2 py-1 rounded-lg whitespace-nowrap hover:text-[var(--primary)] dark:hover:text-[var(--primary)]">
+                <span># <?php echo trim($_to['name']); ?></span>
+            </a>
+            <?php endforeach; ?>
         </div>
+        <?php endif; ?>
     </div>
     <?php if (!$_cover): ?>
     <a href="<?php echo $this->permalink; ?>" title="<?php echo $this->title; ?>" aria-label="<?php echo $this->title; ?>" class="btn-regular absolute bottom-3 right-3 top-3 !hidden w-[3.25rem] rounded-xl bg-[var(--enter-btn-bg)] hover:bg-[var(--enter-btn-bg-hover)] active:scale-95 active:bg-[var(--enter-btn-bg-active)] md:!flex">

@@ -64,11 +64,14 @@ export function Toc() {
 
   // 3. 渲染后根据 visible 项更新 active-indicator 位置
   useEffect(() => {
-    const container = tocWrapperRef.current;
+    const host = tocWrapperRef.current;
     const indicator = activeIndicatorRef.current;
-    if (!container || !indicator) return;
+    if (!host || !indicator) return;
 
-    const visibleEntries = Array.from(container.querySelectorAll(".visible")) as HTMLElement[];
+    // 滚动容器是 layout.php 里的 #toc-inner-wrapper（本组件不再自建同名滚动层）
+    const container = (document.getElementById("toc-inner-wrapper") as HTMLElement) || host;
+
+    const visibleEntries = Array.from(host.querySelectorAll(".visible")) as HTMLElement[];
     if (visibleEntries.length === 0) {
       indicator.classList.add("hidden");
       return;
@@ -99,8 +102,8 @@ export function Toc() {
   };
 
   return (
-    <div class="group relative" id="toc">
-      <div id="toc-inner-wrapper" ref={tocWrapperRef} class="max-h-[calc(100vh-100px)] overflow-y-auto">
+    <div class="group relative">
+      <div ref={tocWrapperRef}>
         {headings.map((heading) => {
           const isVisible = visibleMap.get(heading.id);
           const depthOffset = heading.depth - minDepth;
