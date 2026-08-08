@@ -11,8 +11,8 @@ try {
     foreach ([
         'feed_xml_rss'    => '/rss.xml',
         'feed_xml_atom'   => '/atom.xml',
-        'feed_info_rss'   => '/rss',
-        'feed_info_atom'  => '/atom',
+        'feed_info_rss'   => '/rss/',
+        'feed_info_atom'  => '/atom/',
     ] as $_route => $_path) {
         if (!\Typecho\Router::get($_route)) {
             \Utils\Helper::addRoute($_route, $_path, 'Widget_Archive', 'render', 'index');
@@ -83,6 +83,37 @@ if (!function_exists('themeInit')) {
             usort($results, fn($a, $b) => $b['score'] <=> $a['score']);
             $results = array_slice($results, 0, 13);
             echo json_encode(['hits' => $results, 'keyword' => $q], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        /* ---- AJAX Reactions: ?reaction=1&cid=X&emoji=Y&action=add|remove 返回 JSON ---- */
+        if ($archive->request->get('reaction') === '1') {
+            header('Content-Type: application/json; charset=utf-8');
+            $cid = (int)$archive->request->get('cid', 0);
+            $emoji = (string)$archive->request->get('emoji', '');
+            $action = $archive->request->get('action', 'add') === 'remove' ? 'remove' : 'add';
+            if ($cid <= 0 || $emoji === '') {
+                echo json_encode(['ok' => false]);
+                exit;
+            }
+            $select = $archive->select()
+                ->where('table.contents.type IN (?, ?)', 'post', 'page')
+                ->where('table.contents.status = ?', 'publish')
+                ->where('table.contents.cid = ?', $cid);
+            $archive->query($select);
+            if (!$archive->have()) {
+                echo json_encode(['ok' => false]);
+                exit;
+            }
+            $config = getReactionsConfig();
+            if (!isset($config[$emoji])) {
+                echo json_encode(['ok' => false]);
+                exit;
+            }
+            $data = (array)@$archive->fields->reactions;
+            $data[$emoji] = max(0, (int)($data[$emoji] ?? 0) + ($action === 'add' ? 1 : -1));
+            $archive->setField('reactions', 'json', $data, $cid);
+            echo json_encode(['ok' => true, 'emoji' => $emoji, 'count' => $data[$emoji]]);
             exit;
         }
     }
@@ -206,6 +237,45 @@ if (!function_exists('countViews')) {
     }
 }
 
+/* ---- Reactions ---- */
+if (!function_exists('getReactionsConfig')) {
+    // 解析后台配置：每行一个表态；emoji 原样 / < 开头视为 SVG / http(s):// 或 / 开头视为图片 URL
+    function getReactionsConfig($options = null) {
+        if ($options === null) {
+            $options = \Typecho\Widget::widget('Widget_Options');
+        }
+        $raw = trim((string)($options->reactionsList ?? ''));
+        if ($raw === '') $raw = "👍\n❤️\n🚀\n👀\n👾\n🎉"; // 未保存配置时回退默认
+        $config = [];
+        foreach (preg_split('/\r\n|\r|\n/', $raw) as $line) {
+            $line = trim($line);
+            if ($line === '') continue;
+            $config['r' . count($config)] = getReactionDisplay($line);
+        }
+        return $config;
+    }
+}
+if (!function_exists('getReactionDisplay')) {
+    function getReactionDisplay($line) {
+        if ($line[0] === '<') return ['type' => 'svg', 'value' => $line];
+        if (preg_match('#^https?://#i', $line) || $line[0] === '/') {
+            return ['type' => 'img', 'value' => $line];
+        }
+        // 含 . 或 / 视为相对路径图片（如 assets/images/x.png），否则按 emoji 文本
+        if (preg_match('#[./]#', $line)) {
+            $options = \Typecho\Widget::widget('Widget_Options');
+            return ['type' => 'img', 'value' => \Typecho\Common::url($line, $options->themeUrl)];
+        }
+        return ['type' => 'text', 'value' => $line];
+    }
+}
+if (!function_exists('getReactionCounts')) {
+    function getReactionCounts($archive) {
+        $v = @$archive->fields->reactions;
+        return is_array($v) ? $v : [];
+    }
+}
+
 /* ---- 后台文章编辑页：封面图字段（保存为 fields[cover]，getCoverUrl 读取） ---- */
 if (!function_exists('themePostFields')) {
     function themePostFields($layout) {
@@ -214,6 +284,10 @@ if (!function_exists('themePostFields')) {
         $layout->addItem($cover);
         $views = new $Text('views', null, '', '浏览量', '');
         $layout->addItem($views);
+        $Checkbox = 'Typecho\Widget\Helper\Form\Element\Checkbox';
+        $disable = new $Checkbox('reactionsDisable', ['1' => '在本页禁用表态'], [],
+            'Reactions 表态', '勾选后此文章/页面不显示表态区');
+        $layout->addItem($disable);
     }
 }
 
@@ -317,6 +391,9 @@ if (!function_exists('themeConfig')) {
             ''       => __t('settings.contentTheme.default'),
             'boring' => __t('settings.contentTheme.boring'),
         ], '', __t('settings.contentTheme'), __t('settings.contentTheme.desc')));
+        $form->addInput(new $Textarea('reactionsList', null,
+            "👍\n❤️\n🚀\n👀\n😂\n🎉",
+            __t('settings.reactionsList'), __t('settings.reactionsList.desc')));
 
         $form->addItem(new $Layout('h3', ['style' => 'margin:1.5em 0 0.5em;color:var(--primary)'])
             ->html(__t('settings.group.icp')));

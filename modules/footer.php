@@ -11,8 +11,8 @@ $_gonganLink = $this->options->gonganLink;
       &copy;
       <span id="copyright-year"><?php echo date('Y'); ?></span>
       <?php echo $this->options->title; ?>. All Rights Reserved. /
-      <a class="link font-medium text-[var(--primary)] transition" target="_blank" href="/rss">RSS</a> /
-      <a class="link font-medium text-[var(--primary)] transition" target="_blank" href="/atom">Atom</a> /
+      <a class="link font-medium text-[var(--primary)] transition" target="_blank" href="/rss/">RSS</a> /
+      <a class="link font-medium text-[var(--primary)] transition" target="_blank" href="/atom/">Atom</a> /
       <a class="link font-medium text-[var(--primary)]" target="_blank" href="/sitemap.xml">Sitemap</a><br />
       Powered by
       <a class="link font-medium text-[var(--primary)]" target="_blank" href="https://typecho.org">Typecho</a> &

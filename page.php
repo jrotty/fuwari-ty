@@ -70,6 +70,7 @@ ob_start();
       <span class="icon-[fa6-brands--creative-commons] pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-[15rem] text-black/5 transition dark:text-white/5"></span>
     </div>
     <?php endif; ?>
+    <?php $this->need("modules/reactions.php"); ?>
   </div>
 </div>
 <?php $this->CONTENT = ob_get_clean(); ?>

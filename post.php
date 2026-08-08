@@ -133,6 +133,7 @@ ob_start();
       ></span>
     </div>
     <?php endif; ?>
+    <?php $this->need("modules/reactions.php"); ?>
   </div>
 </div>
 <?php $this->CONTENT = ob_get_clean(); ?>

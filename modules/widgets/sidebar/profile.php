@@ -61,12 +61,12 @@ function _fuwariSocialPlatformIcon($name) {
 }
 ?>
 <div class="card-base p-3">
-  <a aria-label="Go to About Page" href="<?php echo $this->options->authorUrl; ?>" class="group relative mx-auto mb-3 mt-1 block max-w-[12rem] overflow-hidden rounded-xl active:scale-95 lg:mx-0 lg:mt-0 lg:max-w-none">
+  <a aria-label="Go to About Page" href="<?php echo $this->options->authorUrl; ?>" class="group relative mx-auto mb-3 mt-1 block aspect-square max-w-[12rem] overflow-hidden rounded-xl active:scale-95 lg:mx-0 lg:mt-0 lg:max-w-none">
     <div class="pointer-events-none absolute z-50 flex h-full w-full items-center justify-center transition group-hover:bg-black/30 group-active:bg-black/50">
       <span class="icon-[fa6-regular--address-card] scale-90 text-5xl text-white opacity-0 transition group-hover:scale-100 group-hover:opacity-100"></span>
     </div>
     <?php $_avatar = $this->options->authorAvatar; ?>
-    <img src="<?php echo $_avatar && $_avatar[0] !== '/' && !str_starts_with($_avatar, 'http') ? $this->options->themeUrl($_avatar, $this->options->theme) : $_avatar; ?>" alt="Profile Image of the Author" class="mx-auto h-full lg:mt-0 lg:w-full">
+    <img src="<?php echo $_avatar && $_avatar[0] !== '/' && !str_starts_with($_avatar, 'http') ? $this->options->themeUrl($_avatar, $this->options->theme) : $_avatar; ?>" alt="Profile Image of the Author" class="mx-auto h-full w-full object-cover lg:mt-0">
   </a>
   <div class="px-2">
     <div class="mb-1 text-center text-xl font-bold transition dark:text-neutral-50"><?php echo $this->options->authorName; ?></div>
