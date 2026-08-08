@@ -6,7 +6,7 @@
 
 </div>
 
-预览：[YxlaGyb'Blog](https://blog.klbbx.cc)
+预览：暂无
 
 ## 许可证
 
