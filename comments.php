@@ -1,58 +1,49 @@
-<?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
-<div id="comments" class="card-base relative z-10 w-full px-6 pb-4 pt-6 md:px-9">
-  <?php $this->comments()->to($_comments); ?>
+<?php if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
-  <?php if ($_comments->have()): ?>
-    <div class="mb-4 flex items-center gap-2">
-      <span class="icon-[material-symbols--chat-outline] text-[1.5rem] text-[var(--primary)]"></span>
-      <span class="text-lg font-bold"><?php $_comments->commentsNum('评论', '1 条评论', '%d 条评论'); ?></span>
+$this->need("modules/comment-util.php");
+if (!function_exists('fuwari_comments_render')) {
+    function fuwari_comments_render($archive)
+    {
+        if (!comment_ensure_tables(\Typecho\Db::get())) return;
+        $user = fuwari_user();
+        $options = fuwari_options();
+        $myVotes = fuwari_comments_my_votes(\Typecho\Db::get());
+        $sort = fuwari_request()->get('commentsort', 'recommend');
+        if (!in_array($sort, ['recommend', 'latest', 'oldest'], true)) $sort = 'recommend';
+        $ghBtn = comment_github_button($options, $archive->permalink);
+        ?>
+<div class="fuwari-comments card-base relative z-10 w-full px-6 pb-6 pt-6 md:px-9 mt-4" data-cid="<?php echo $archive->cid; ?>" data-login="<?php echo $user->hasLogin() ? '1' : '0'; ?>">
+  <div class="comma-header">
+    <div class="comma-title">
+      <span><?php echo __t('comments.title'); ?></span>
+      <span class="comma-title-count" data-comma-total><?php echo (int)$archive->commentsNum; ?></span>
     </div>
-
-    <?php $_comments->listComments(); ?>
-
-    <?php $_comments->pageNav('&laquo;', '&raquo;'); ?>
-  <?php endif; ?>
-
-  <?php if ($this->allow('comment')): ?>
-    <div id="<?php $this->respondId(); ?>" class="respond mt-6">
-      <div class="cancel-comment-reply mb-2">
-        <button class="btn-plain h-8 rounded-lg px-3 text-sm"><?php $_comments->cancelReply(); ?></button>
-      </div>
-
-      <div class="mb-3 flex items-center gap-2">
-        <span class="icon-[material-symbols--edit-outline] text-[1.5rem] text-[var(--primary)]"></span>
-        <span class="text-lg font-bold">添加新评论</span>
-      </div>
-
-      <form method="post" action="<?php $this->commentUrl(); ?>" id="comment-form" role="form" class="flex flex-col gap-3">
-        <div>
-          <label class="mb-1 block text-sm font-bold text-neutral-600 dark:text-neutral-400">内容</label>
-          <textarea rows="4" name="text" id="textarea" class="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm transition focus:border-[var(--primary)] focus:outline-none dark:border-white/10" required><?php $this->remember('text'); ?></textarea>
-        </div>
-
-        <?php if (!$this->user->hasLogin()): ?>
-        <div class="flex flex-wrap gap-3">
-          <div class="flex-1">
-            <label for="author" class="mb-1 block text-sm font-bold text-neutral-600 dark:text-neutral-400">称呼</label>
-            <input type="text" name="author" id="author" class="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm transition focus:border-[var(--primary)] focus:outline-none dark:border-white/10" value="<?php $this->remember('author'); ?>" required />
-          </div>
-          <div class="flex-1">
-            <label for="mail" class="mb-1 block text-sm font-bold text-neutral-600 dark:text-neutral-400">Email</label>
-            <input type="email" name="mail" id="mail" class="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm transition focus:border-[var(--primary)] focus:outline-none dark:border-white/10" value="<?php $this->remember('mail'); ?>" />
-          </div>
-          <div class="flex-1">
-            <label for="url" class="mb-1 block text-sm font-bold text-neutral-600 dark:text-neutral-400">网站</label>
-            <input type="url" name="url" id="url" class="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm transition focus:border-[var(--primary)] focus:outline-none dark:border-white/10" placeholder="http://" value="<?php $this->remember('url'); ?>" />
-          </div>
-        </div>
-        <?php endif; ?>
-
-        <div>
-          <button type="submit" class="btn-regular h-9 rounded-lg px-5 font-bold">提交评论</button>
-        </div>
-      </form>
+    <div class="comma-header-right">
+      <button type="button" class="comma-sort <?php echo $sort === 'recommend' ? 'comma-sort-on' : ''; ?>" data-sort="recommend"><?php echo __t('comments.sort.recommend'); ?></button>
+      <button type="button" class="comma-sort <?php echo $sort === 'latest' ? 'comma-sort-on' : ''; ?>" data-sort="latest"><?php echo __t('comments.sort.latest'); ?></button>
+      <button type="button" class="comma-sort <?php echo $sort === 'oldest' ? 'comma-sort-on' : ''; ?>" data-sort="oldest"><?php echo __t('comments.sort.oldest'); ?></button>
+      <button type="button" class="comma-refresh js-comma-refresh" title="<?php echo __t('comments.refresh'); ?>" aria-label="<?php echo __t('comments.refresh'); ?>">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8Zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 8.74C4.46 9.97 4 11.43 4 13c0 4.42 3.58 8 8 8v3l5-4-5-4v3Z"/></svg>
+      </button>
     </div>
-  <?php else: ?>
-    <div class="flex items-center justify-center py-8 text-neutral-500">评论已关闭</div>
-  <?php endif; ?>
+  </div>
+
+  <div class="comma-form-wrap">
+    <div class="comma-replying" hidden></div>
+    <?php $archive->need("modules/comment-form.php"); ?>
+  </div>
+
+  <ul class="comma-list"></ul>
+  <button type="button" class="comma-more js-comma-more" hidden><?php echo __t('comments.loadMore'); ?></button>
 </div>
+<script type="application/json" id="comma-json"><?php
+        echo json_encode([
+            'cid' => $archive->cid, 'sort' => $sort, 'login' => $user->hasLogin(),
+            'myVotes' => $myVotes,
+            'token' => md5($options->secret . '&comments'),
+        ], JSON_UNESCAPED_UNICODE);
+        ?></script>
+<?php
+    }
+}
+fuwari_comments_render($this);

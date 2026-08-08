@@ -136,5 +136,6 @@ ob_start();
     <?php $this->need("modules/reactions.php"); ?>
   </div>
 </div>
+<?php $this->need("comments.php"); ?>
 <?php $this->CONTENT = ob_get_clean(); ?>
 <?php $this->need("modules/layout.php"); ?>

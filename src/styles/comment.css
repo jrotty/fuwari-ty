@@ -1,428 +1,587 @@
 /* ================================================================
-   Comment Section — Fuwari Native (matches card-base / btn-regular)
+   Comment Section — 紧凑简洁，对齐主题设计语言
    ================================================================ */
 
-.comment-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line-divider);
+/* ── 头部 ───────────────────────────────────────── */
+
+.comma-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
-
-/* ── Title ──────────────────────────────────────── */
-
-.comment-title {
-  position: relative;
-  margin-left: 1rem;
-  margin-bottom: 1.25rem;
-  font-size: 1.25rem;
+.comma-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--btn-content);
-  transition: color 0.2s;
 }
-
-.comment-title::before {
-  content: "";
-  position: absolute;
-  left: -1rem;
-  top: 0.35rem;
-  height: 1rem;
-  width: 0.25rem;
-  border-radius: 0.25rem;
-  background: var(--primary);
-}
-
-.comment-count {
-  margin-left: 0.375rem;
+.comma-title-count {
   font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--meta-divider);
+  font-weight: 600;
+  color: var(--btn-content);
+  opacity: 0.45;
+}
+.comma-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+/* 排序：主色文字，未激活降透明度 */
+.comma-sort {
+  padding: 4px 8px;
+  font-size: 0.8125rem;
+  color: var(--primary);
+  opacity: 0.5;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+.comma-sort:hover {
+  opacity: 0.8;
+  background: var(--btn-plain-bg-hover);
+}
+.comma-sort-on {
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* 刷新 */
+.comma-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: var(--btn-content);
+  opacity: 0.45;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+.comma-refresh:hover {
+  opacity: 1;
+  background: var(--btn-plain-bg-hover);
+}
+.comma-refresh.spinning svg {
+  animation: comma-spin 0.6s linear infinite;
+}
+@keyframes comma-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── 表单 ───────────────────────────────────────── */
+
+.comma-form-wrap {
+  margin-bottom: 1.25rem;
+}
+.comma-form {
+  display: flex;
+  flex-direction: column;
+}
+.comma-textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--btn-content);
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.comma-textarea::placeholder {
+  color: var(--btn-content);
+  opacity: 0.35;
+}
+.comma-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 15%, transparent);
+}
+.comma-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--btn-content);
+  opacity: 0.4;
+}
+.comma-count.over {
+  color: #d64545;
+  opacity: 1;
+}
+
+/* 身份：头像与昵称连成一体（头像贴昵称块左缘） */
+.comma-identity-box {
+  display: inline-flex;
+  align-items: stretch;
+  margin-bottom: 10px;
+}
+.comma-identity-box[hidden] {
+  display: none;
+}
+.comma-identity-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  object-fit: cover;
+  background: var(--btn-regular-bg);
+  flex-shrink: 0;
+  display: block;
+  border: 1px solid var(--line-color);
+  border-right: none;
+  box-sizing: border-box;
+}
+.comma-identity-name {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--btn-regular-bg);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--btn-content);
+  line-height: 1;
+  border: 1px solid var(--line-color);
+  border-left: none;
+  box-sizing: border-box;
+}
+
+/* 游客三字段：textarea 下一行 */
+.comma-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+@media (max-width: 640px) {
+  .comma-fields {
+    grid-template-columns: 1fr;
+  }
+}
+.comma-fields .comma-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+  color: var(--btn-content);
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.comma-fields .comma-input:focus {
+  border-color: var(--primary);
+}
+.comma-fields .comma-input::placeholder {
+  color: var(--btn-content);
+  opacity: 0.35;
+}
+
+/* 底部行：GitHub 登录 + 提交 */
+.comma-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.comma-spacer {
+  flex: 1;
+}
+.comma-gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--btn-content);
+  background: var(--btn-regular-bg);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.comma-gh:hover {
+  background: var(--btn-regular-bg-hover);
+}
+.comma-gh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+.comma-gh svg {
+  color: var(--primary);
+}
+.comma-or {
+  font-size: 0.75rem;
+  color: var(--btn-content);
+  opacity: 0.4;
+}
+.comma-logged-in {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--btn-content);
+  opacity: 0.8;
+}
+.comma-logged-in strong {
+  font-weight: 700;
+  color: var(--primary);
+}
+.comma-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 18px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--btn-content);
+  background: var(--btn-regular-bg-active);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.1s;
+}
+.comma-submit-btn:hover {
+  background: var(--btn-regular-bg-hover);
+}
+.comma-submit-btn:active {
+  transform: scale(0.97);
+}
+
+/* 回复提示条（hidden 时彻底隐藏） */
+.comma-replying {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  color: var(--primary);
+  background: var(--btn-regular-bg);
+  border-radius: 8px;
+}
+.comma-replying[hidden] {
+  display: none;
+}
+.comma-replying strong {
+  font-weight: 600;
+}
+.comma-reply-cancel {
+  font-size: 0.75rem;
+  color: inherit;
+  opacity: 0.8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.comma-reply-cancel:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ── 评论列表：单评论一卡，紧凑 ─────────────────── */
+
+.comma-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.comma-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0;
+  animation: comma-fade-in 0.25s ease-in-out;
+}
+.comma-item + .comma-item {
+  border-top: 1px solid var(--line-divider);
+}
+@keyframes comma-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 头像：32px 小方角 */
+.comma-avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--btn-regular-bg);
+  flex-shrink: 0;
+  display: block;
+}
+.comma-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 评论头：作者 + 徽章 + 时间右对齐 */
+.comma-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.comma-author {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--btn-content);
+}
+.comma-author a {
+  color: inherit;
+  text-decoration: none;
+}
+.comma-author a:hover {
+  color: var(--primary);
+}
+.comma-badge {
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--primary);
+  background: var(--btn-regular-bg);
+}
+.comma-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 0.6875rem;
+  color: var(--btn-content);
+  opacity: 0.4;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.comma-meta .dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 正文 */
+.comma-text {
+  margin-top: 4px;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--btn-content);
+  word-break: break-word;
+}
+.comma-text p {
+  margin: 0.35em 0;
+}
+.comma-text p:first-child {
+  margin-top: 0;
+}
+.comma-text p:last-child {
+  margin-bottom: 0;
+}
+.comma-text a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.comma-text :not(pre) > code {
+  background: var(--inline-code-bg);
+  color: var(--inline-code-color);
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-weight: 600;
+}
+.comma-text pre {
+  margin: 0.5em 0;
+}
+
+/* 操作行：图标按钮，紧凑 */
+.comma-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 4px;
+}
+.comma-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  color: var(--btn-content);
+  opacity: 0.5;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s, color 0.15s, background-color 0.15s;
+}
+.comma-action:hover {
+  opacity: 1;
+  color: var(--primary);
+  background: var(--btn-plain-bg-hover);
+}
+.comma-action.voted {
+  opacity: 1;
+  color: var(--primary);
+}
+.comma-action.danger:hover {
+  color: #d64545;
+  background: rgba(214, 69, 69, 0.08);
+}
+.comma-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 回复嵌套：缩进 + 左侧细线 */
+.comma-children {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0 0 0 12px;
+  border-left: 2px solid var(--line-divider);
+  display: flex;
+  flex-direction: column;
+}
+.comma-children .comma-item {
+  padding-bottom: 8px;
+}
+
+/* ── 查看更多 / 空状态 / 骨架 ───────────────────── */
+
+.comma-more {
+  margin-top: 8px;
+  height: 34px;
+  width: 100%;
+  font-size: 0.8125rem;
+  color: var(--btn-content);
+  opacity: 0.5;
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+.comma-more:hover {
+  opacity: 1;
+  border-color: var(--primary);
+}
+
+.comma-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 2rem 0;
+  text-align: center;
+}
+.comma-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--btn-regular-bg);
+  color: var(--btn-content);
+  opacity: 0.4;
+}
+.comma-empty-text {
+  font-size: 0.8125rem;
+  color: var(--btn-content);
+  opacity: 0.4;
+}
+
+.comma-skeleton {
+  display: flex;
+  gap: 10px;
+  padding: 12px 0;
+}
+.comma-skeleton-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: var(--btn-regular-bg);
+  animation: comma-pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.comma-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 2px;
+}
+.comma-skeleton-line {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--btn-regular-bg);
+  animation: comma-pulse 1.2s ease-in-out infinite;
+}
+.comma-skeleton-line:nth-child(1) {
+  width: 30%;
+}
+.comma-skeleton-line:nth-child(2) {
+  width: 90%;
+}
+.comma-skeleton-line:nth-child(3) {
+  width: 65%;
+}
+@keyframes comma-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ── Toast ──────────────────────────────────────── */
 
-.comment-toast {
+.comma-toast {
   position: fixed;
-  bottom: 1.5rem;
   left: 50%;
-  z-index: 999;
-  transform: translate(-50%, 1rem);
-  border-radius: var(--radius-large);
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  bottom: 2rem;
+  transform: translate(-50%, 12px);
+  max-width: min(90vw, 420px);
+  padding: 10px 18px;
+  font-size: 0.8125rem;
+  color: var(--btn-content);
+  background: var(--float-panel-bg);
+  border: 1px solid var(--line-color);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
   opacity: 0;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 9999;
 }
-
-.comment-toast.show {
+.comma-toast.show {
   opacity: 1;
   transform: translate(-50%, 0);
 }
-
-.comment-toast.success {
-  background: var(--btn-regular-bg);
-  color: var(--btn-content);
-}
-
-.comment-toast.error {
-  background: oklch(0.95 0.02 25);
-  color: oklch(0.55 0.2 25);
-}
-
-:root.dark .comment-toast.error {
-  background: oklch(0.25 0.04 25);
-  color: oklch(0.75 0.15 25);
-}
-
-/* ── Form ───────────────────────────────────────── */
-
-.comment-form {
-  padding: 1.25rem;
-  border-radius: var(--radius-large);
-  background: var(--btn-regular-bg);
-  transition: background 0.2s;
-}
-
-@media (min-width: 640px) {
-  .comment-form {
-    padding: 1.5rem;
-  }
-}
-
-.comment-form-reply-hint {
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--btn-content);
-}
-
-.comment-form-cancel {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 0.8125rem;
-  color: var(--primary);
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.comment-form-cancel:hover {
-  opacity: 0.7;
-}
-
-.comment-form-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.625rem;
-  margin-bottom: 0.625rem;
-}
-
-@media (min-width: 640px) {
-  .comment-form-row {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-.comment-input,
-.comment-textarea {
-  width: 100%;
-  border: none;
-  border-radius: 0.75rem;
-  background: var(--card-bg);
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  color: var(--btn-content);
-  outline: none;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.2s, background 0.2s;
-}
-
-.comment-textarea {
-  resize: vertical;
-  min-height: 110px;
-  padding: 0.75rem 1rem;
-  font-family: inherit;
-  line-height: 1.6;
-}
-
-.comment-input::placeholder,
-.comment-textarea::placeholder {
-  color: var(--meta-divider);
-}
-
-.comment-input:focus,
-.comment-textarea:focus {
-  box-shadow: 0 0 0 2px var(--primary);
-}
-
-.comment-error {
-  margin-top: 0.5rem;
-  font-size: 0.8125rem;
-  color: oklch(0.55 0.2 25);
-}
-
-:root.dark .comment-error {
-  color: oklch(0.75 0.15 25);
-}
-
-.comment-submit-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.75rem;
-}
-
-.comment-submit {
-  border: none;
-  border-radius: 0.75rem;
-  background: var(--btn-regular-bg);
-  padding: 0.625rem 2rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--btn-content);
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.comment-submit:hover {
-  background: var(--btn-regular-bg-hover);
-}
-
-.comment-submit:active {
-  background: var(--btn-regular-bg-active);
-  transform: scale(0.97);
-}
-
-.comment-submit:disabled {
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-/* ── Comment List ───────────────────────────────── */
-
-.comment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.comment-item {
-  padding: 1.25rem;
-  border-radius: var(--radius-large);
-  background: var(--btn-regular-bg);
-  transition: background 0.2s;
-}
-
-@media (min-width: 640px) {
-  .comment-item {
-    padding: 1.5rem;
-  }
-}
-
-.comment-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.comment-avatar {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  transition: outline-color 0.2s;
-}
-
-.comment-reply-item .comment-avatar {
-  width: 2rem;
-  height: 2rem;
-  outline-width: 1.5px;
-}
-
-.comment-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.0625rem;
-}
-
-.comment-author {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--btn-content);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-a.comment-author:hover {
-  color: var(--primary);
-}
-
-.comment-time {
-  font-size: 0.75rem;
-  color: var(--meta-divider);
-}
-
-.comment-body {
-  margin-top: 0.75rem;
-  font-size: 0.9375rem;
-  line-height: 1.75;
-  color: var(--btn-content);
-  word-break: break-word;
-}
-
-/* ── Actions ────────────────────────────────────── */
-
-.comment-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.625rem;
-}
-
-.comment-reply-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  border: none;
-  background: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--meta-divider);
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s;
-}
-
-.comment-reply-btn:hover {
-  color: var(--primary);
-  background: var(--btn-plain-bg-hover);
-}
-
-.comment-toggle-replies {
-  border: none;
-  background: none;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  color: var(--primary);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.comment-toggle-replies:hover {
-  background: var(--btn-plain-bg-hover);
-}
-
-/* ── Replies ────────────────────────────────────── */
-
-.comment-replies {
-  margin-left: 3.5rem;
-  margin-top: 0.75rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--line-color);
-}
-
-@media (max-width: 640px) {
-  .comment-replies {
-    margin-left: 2rem;
-  }
-}
-
-.comment-reply-item {
-  padding: 0.75rem 0;
-}
-
-.comment-reply-item + .comment-reply-item {
-  border-top: 1px solid var(--line-color);
-}
-
-.comment-reply-form {
-  margin-left: 3.5rem;
-  margin-top: 0.5rem;
-}
-
-@media (max-width: 640px) {
-  .comment-reply-form {
-    margin-left: 2rem;
-  }
-}
-
-/* ── Empty / Loading ────────────────────────────── */
-
-.comment-loading {
-  padding: 3rem 0;
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--meta-divider);
-}
-
-.comment-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 3rem 0;
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--meta-divider);
-}
-
-.comment-empty-icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: var(--btn-regular-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--meta-divider);
-}
-
-/* ── Pagination ─────────────────────────────────── */
-
-.comment-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line-divider);
-}
-
-.comment-page-btn {
-  border: none;
-  border-radius: 0.75rem;
-  background: var(--btn-regular-bg);
-  padding: 0.375rem 1rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--btn-content);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.comment-page-btn:hover:not(:disabled) {
-  background: var(--btn-regular-bg-hover);
-}
-
-.comment-page-btn:disabled {
-  pointer-events: none;
-  opacity: 0.3;
-}
-
-.comment-page-info {
-  font-size: 0.8125rem;
-  color: var(--meta-divider);
-}
-
-:root.dark .comment-reply-item {
-  border-color: var(--line-color, rgba(255, 255, 255, 0.04));
+.comma-toast.error {
+  border-color: rgba(214, 69, 69, 0.4);
 }

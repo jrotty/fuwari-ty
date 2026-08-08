@@ -5,6 +5,16 @@
 $this->PAGE_TYPE = $this->PAGE_TYPE ?: ($this->is('index') ? 'home' : '');
 $this->PAGE_META = $this->PAGE_META ?? '';
 $this->CONTENT = $this->CONTENT ?? '';
+
+$_bannerMode = (string)($this->options->bannerMode ?? 'banner');
+if (!in_array($_bannerMode, ['banner', 'hidden', 'fullscreen'], true)) {
+    $_bannerMode = 'banner';
+}
+$this->BANNER_MODE = $_bannerMode;
+$_bannerOn = $_bannerMode !== 'hidden';
+$_bannerHeight = $_bannerMode === 'fullscreen' ? 100 : 35;
+$_bannerHeightHome = $_bannerMode === 'fullscreen' ? 100 : 65;
+$_bannerExtend = $_bannerMode === 'fullscreen' ? 0 : 30;
 ?>
 <!DOCTYPE html>
 <html lang="zh" class="bg-[var(--page-bg)] text-[14px] transition md:text-[16px]" data-overlayscrollbars-initialize>
@@ -30,9 +40,9 @@ $this->CONTENT = $this->CONTENT ?? '';
         const LIGHT_MODE = "light";
         const DARK_MODE = "dark";
         const AUTO_MODE = "auto";
-        const BANNER_HEIGHT = 35;
-        const BANNER_HEIGHT_EXTEND = 30;
-        const BANNER_HEIGHT_HOME = BANNER_HEIGHT + BANNER_HEIGHT_EXTEND;
+        const BANNER_HEIGHT = <?php echo $_bannerHeight; ?>;
+        const BANNER_HEIGHT_EXTEND = <?php echo $_bannerExtend; ?>;
+        const BANNER_HEIGHT_HOME = <?php echo $_bannerHeightHome; ?>;
         const PAGE_WIDTH = 75;
         const configHue = <?php echo (int)$this->options->themeColorHue; ?> || 250;
         const banner_position = "<?php echo $this->options->bannerPosition; ?>" || "center";
@@ -42,7 +52,6 @@ $this->CONTENT = $this->CONTENT ?? '';
           bottom: "0",
         };
         const bannerOffset = bannerOffsetByPosition[banner_position || "center"];
-
         const theme = localStorage.getItem("color-scheme-fuwari") || DEFAULT_THEME;
         switch (theme) {
           case LIGHT_MODE:
@@ -80,18 +89,17 @@ $this->CONTENT = $this->CONTENT ?? '';
     <?php echo $this->PAGE_META; ?>
 </head>
 
-<body class="min-h-screen transition<?php if ($this->PAGE_TYPE === 'home'): ?> is-home<?php endif; ?><?php if ($this->options->bannerEnable): ?> enable-banner<?php endif; ?>" data-page-type="<?php echo $this->PAGE_TYPE; ?>" data-overlayscrollbars-initialize>
+<body class="min-h-screen transition<?php if ($this->PAGE_TYPE === 'home'): ?> is-home<?php endif; ?><?php if ($_bannerOn): ?> enable-banner<?php endif; ?><?php if ($_bannerMode === 'fullscreen'): ?> banner-fullscreen wallpaper-transparent<?php endif; ?>" data-page-type="<?php echo $this->PAGE_TYPE; ?>" data-overlayscrollbars-initialize>
     <?php $this->need("modules/config-carrier.php"); ?>
     <?php $this->need("modules/top-row.php"); ?>
-    
-    <?php if ($this->options->bannerEnable): ?>
+
+    <?php if ($_bannerOn): ?>
     <?php $this->need("modules/banner-wrapper.php"); ?>
     <?php endif; ?>
-    
-    <div id="content-area-wrapper" class="pointer-events-none absolute z-30 w-full" style="top: <?php echo $this->options->bannerEnable ? 'calc(35vh - 3.5rem)' : '5.5rem'; ?>">
-      <div class="pointer-events-auto relative mx-auto max-w-[var(--page-width)]">
+
+    <div id="content-area-wrapper" class="pointer-events-none absolute z-30 w-full" style="top: <?php echo $_bannerOn ? ($_bannerMode === 'fullscreen' ? '5.5rem' : 'calc(35vh - 3.5rem)') : '5.5rem'; ?>">      <div class="pointer-events-auto relative mx-auto max-w-[var(--page-width)]">
         <div id="main-grid" class="left-0 right-0 mx-auto grid w-full grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] gap-4 px-0 transition duration-700 md:px-4 lg:grid-rows-[auto]">
-          <?php if ($this->options->bannerEnable && $this->options->bannerCreditEnable): ?>
+          <?php if ($_bannerOn && $_bannerMode !== 'fullscreen' && $this->options->bannerCreditEnable): ?>
           <?php $this->need("modules/widgets/banner-credit.php"); ?>
           <?php endif; ?>
           <?php $this->need("modules/sideBar.php"); ?>
@@ -117,7 +125,7 @@ $this->CONTENT = $this->CONTENT ?? '';
     <!-- 目录独立于 #content-area-wrapper（其 pointer-events-none 会挡住目录的点击/滚动），与 body 同级可交互 -->
     <div class="absolute z-0 hidden w-full 2xl:block">
       <div class="relative mx-auto max-w-[var(--page-width)]">
-        <div id="toc-wrapper" class="absolute -right-[var(--toc-width)] top-0 hidden w-[var(--toc-width)] items-center transition lg:block<?php if ($this->options->bannerEnable): ?> toc-hide<?php endif; ?>">
+        <div id="toc-wrapper" class="absolute -right-[var(--toc-width)] top-0 hidden w-[var(--toc-width)] items-center transition lg:block<?php if ($_bannerOn): ?> toc-hide<?php endif; ?>">
           <div id="toc-inner-wrapper" class="hide-scrollbar fixed top-14 h-[calc(100vh_-_20rem)] w-[var(--toc-width)] overflow-x-hidden overflow-y-scroll">
             <div id="toc" class="transition-swup-fade h-full w-full">
               <div class="h-8 w-full"></div>

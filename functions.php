@@ -1,8 +1,9 @@
 <?php
 
-/* ---- 注册 /archives/ 路由 ---- */
-// Typecho 默认没有 /archives/ 路由（archive 路由映射到 /blog/），
-// 使用 Helper::addRoute 写入路由表（Typecho 标准 API），持久化到数据库。
+/* 评论系统纯函数库（themeConfig 也要用其中的函数） */
+require_once __DIR__ . '/modules/comment-util.php';
+
+/* ---- 注册路由 ---- */
 try {
     if (!\Typecho\Router::get('archives_list')) {
         \Utils\Helper::addRoute('archives_list', '/archives/', 'Widget_Archive', 'render', 'index');
@@ -18,6 +19,9 @@ try {
             \Utils\Helper::addRoute($_route, $_path, 'Widget_Archive', 'render', 'index');
         }
     }
+    if (!\Typecho\Router::get('oauth_github')) {
+        \Utils\Helper::addRoute('oauth_github', '/oauth/github/', 'Widget_Archive', 'render', 'index');
+    }
 } catch (\Throwable $e) {
     // ignore
 }
@@ -29,6 +33,12 @@ if (!function_exists('themeInit')) {
         if ('archives_list' === $archive->parameter->type) {
             $archive->setThemeFile('archives.php');
         }
+        if ('oauth_github' === $archive->parameter->type) {
+            // GitHub OAuth 回调：处理 code → 登录 → 跳回
+            require_once __DIR__ . '/modules/comment-util.php';
+            fuwari_comments_oauth($archive);
+            exit;
+        }
 
         /* ---- RSS/Atom 订阅路由: 按路线 type 分派 modules 模板 ---- */
         $rt = $archive->parameter->type;
@@ -37,6 +47,10 @@ if (!function_exists('themeInit')) {
         } elseif (in_array($rt, ['feed_info_rss', 'feed_info_atom'], true)) {
             $archive->setThemeFile('modules/feed-info.php');
         }
+
+        /* ---- 评论系统 AJAX / OAuth 端点 ---- */
+        require_once __DIR__ . '/modules/comment-util.php';
+        fuwari_comments_dispatch($archive);
 
         /* ---- AJAX 搜索: /search/[keyword]/?ajax=1 返回 JSON ---- */
         if ($archive->is('search') && $archive->request->get('ajax') === '1') {
@@ -119,8 +133,7 @@ if (!function_exists('themeInit')) {
     }
 }
 
-/* ---- 国际化: .properties 翻译函数 ---- */
-if (!function_exists('__t')) {
+/* ---- 国际化: .properties 翻译函数 ---- */if (!function_exists('__t')) {
     function __t(string $key, ...$args): string {
         static $strings = [];
         static $loaded = false;
@@ -318,8 +331,11 @@ if (!function_exists('themeConfig')) {
         $form->addInput(new $Checkbox('themeColorFixed', ['1' => __t('settings.themeColorFixed.label')], [],
             __t('settings.themeColorFixed'), __t('settings.themeColorFixed.desc')));
 
-        $form->addInput(new $Checkbox('bannerEnable', ['1' => __t('settings.bannerEnable.label')], [],
-            __t('settings.bannerEnable'), __t('settings.bannerEnable.desc')));
+        $form->addInput(new $Select('bannerMode', [
+            'banner'     => __t('settings.bannerMode.banner'),
+            'fullscreen' => __t('settings.bannerMode.fullscreen'),
+            'hidden'     => __t('settings.bannerMode.hidden'),
+        ], 'banner', __t('settings.bannerMode'), __t('settings.bannerMode.desc')));
         $form->addInput(new $Text('bannerSrc', null, 'assets/images/demo-banner.png',
             __t('settings.bannerSrc'), __t('settings.bannerSrc.desc')));
         $form->addInput(new $Select('bannerPosition', [
@@ -394,6 +410,20 @@ if (!function_exists('themeConfig')) {
         $form->addInput(new $Textarea('reactionsList', null,
             "👍\n❤️\n🚀\n👀\n😂\n🎉",
             __t('settings.reactionsList'), __t('settings.reactionsList.desc')));
+        $form->addInput(new $Text('commentPerPage', null, '8',
+            __t('settings.commentPerPage'), __t('settings.commentPerPage.desc')));
+
+        $form->addItem(new $Layout('h3', ['style' => 'margin:1.5em 0 0.5em;color:var(--primary)'])
+            ->html(__t('settings.group.comments')));
+
+        $form->addInput(new $Text('githubClientId', null, '',
+            __t('settings.githubClientId'), __t('settings.githubClientId.desc')));
+        $form->addInput(new $Text('githubClientSecret', null, '',
+            __t('settings.githubClientSecret'), __t('settings.githubClientSecret.desc')));
+        $form->addInput(new $Text('githubRedirectUrl', null, '',
+            __t('settings.githubRedirectUrl'), __t('settings.githubRedirectUrl.desc')));
+        $form->addItem(new $Layout('p', ['style' => 'margin:0.5em 0 1em;padding:8px 12px;background:var(--btn-regular-bg);border-radius:8px;color:var(--btn-content);font-size:0.9em'])
+            ->html(__t('settings.githubCallbackInfo') . ' <code>' . htmlspecialchars(fuwari_gh_redirect(\Typecho\Widget::widget('Widget_Options'))) . '</code>'));
 
         $form->addItem(new $Layout('h3', ['style' => 'margin:1.5em 0 0.5em;color:var(--primary)'])
             ->html(__t('settings.group.icp')));

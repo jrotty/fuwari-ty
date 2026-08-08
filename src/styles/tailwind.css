@@ -25,6 +25,47 @@
   .enable-banner.is-home #sidebar-sticky {
     @apply top-[calc(1rem_-_var(--banner-height-extend))]
   }
+
+  body.wallpaper-transparent {
+    --card-bg-transparent: rgba(255, 255, 255, var(--card-transparent-opacity, 0.6));
+  }
+  :root.dark body.wallpaper-transparent {
+    --card-bg-transparent: rgba(23, 23, 23, var(--card-transparent-opacity, 0.6));
+  }
+  body.wallpaper-transparent .card-base,
+  body.wallpaper-transparent .card-base .card-base {
+    background: var(--card-bg-transparent) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    isolation: isolate;
+  }
+  body.wallpaper-transparent .float-panel {
+    background: var(--card-bg-transparent) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+  body.wallpaper-transparent #navbar > .absolute,
+  body.wallpaper-transparent #navbar .card-base {
+    background: var(--card-bg-transparent) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+  body.wallpaper-transparent .btn-card {
+    background: var(--card-bg-transparent) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+  .enable-banner.banner-fullscreen.is-home #main-grid,
+  .enable-banner.banner-fullscreen #main-grid {
+    @apply translate-y-0
+  }
+  .enable-banner.banner-fullscreen #top-row {
+    @apply relative z-10 h-auto transition-all duration-300
+  }
+  .enable-banner.banner-fullscreen #content-area-wrapper {
+    top: 5.5rem !important;
+    z-index: 30;
+  }
   .navbar-hidden {
     @apply opacity-0 -translate-y-16
   }
@@ -181,3 +222,13 @@
   }
 }
 
+
+/* 全屏模式（参考 Mizuki）：fixed 壁纸铺满视口
+   必须 ≥ 内容区 z-30 才能被卡片 backdrop-filter 采样，< 导航 z-50 避免盖住导航 */
+body.banner-fullscreen #banner-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 40;
+}

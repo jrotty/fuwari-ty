@@ -9,6 +9,7 @@ import "./styles/scrollbar.css";
 import "./styles/transition.css";
 import "./styles/markdown.css";
 import "./styles/photoswipe.css";
+import "./styles/comment.css";
 
 import "overlayscrollbars/overlayscrollbars.css";
 import "photoswipe/style.css";
@@ -24,6 +25,7 @@ import SwupScrollPlugin from "@swup/scroll-plugin";
 import SwupScriptsPlugin from "@swup/scripts-plugin";
 
 import { mountSearch, mountDisplaySettings, mountToc, clearToc } from "./preact";
+import { mountComments } from "./comments";
 import {
   OverlayScrollbars,
   // ScrollbarsHidingPlugin,
@@ -130,6 +132,8 @@ function mountWidgets() {
   }
   //   挂载目录（结构上把挂载交给 updateToc，避免与初始逻辑分叉）
   updateToc();
+  //   挂载评论区
+  mountComments();
 }
 
 // 初始化 admonition 笔记块（输出结构匹配原版 rehype-component-admonition）
@@ -456,6 +460,8 @@ function initCustomScrollbar() {
 }
 function showBanner() {
   if (!themeConfig?.base.banner.enable) return;
+  // 全屏模式：壁纸常显，无需入场动画
+  if (document.body.classList.contains("banner-fullscreen")) return;
 
   const banner = document.getElementById("banner");
   if (!banner) {
@@ -534,6 +540,7 @@ const setup = () => {
     initCodeHighlight();
     loadButtonScript();
     updateToc();
+    mountComments();
   });
   swup.hooks.on("visit:start", (visit) => {
     // toggle is-home class based on target URL (matching original Fuwari pattern)
@@ -658,6 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const toc = document.getElementById("toc-wrapper");
   const navbar = document.getElementById("navbar-wrapper");
   bannerEnabled = !!document.getElementById("banner-wrapper");
+  const bannerFullscreen = document.body.classList.contains("banner-fullscreen");
   function scrollFunction() {
     const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
 
@@ -677,6 +685,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // 全屏模式：背景固定，导航始终悬浮，无需隐藏逻辑
+    if (bannerFullscreen) return;
     if (!bannerEnabled) return;
     if (navbar) {
       const NAVBAR_HEIGHT = 72;
