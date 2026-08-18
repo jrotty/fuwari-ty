@@ -93,7 +93,7 @@ function getThemeConfig(): ThemeConfig | undefined {
 
 // 使用
 const themeConfig = getThemeConfig();
-console.log("主题配置：", themeConfig);
+//console.log("主题配置：", themeConfig);
 
 // 按当前页是否含文章正文（#content）同步侧栏目录：
 // - 有 #content（文章）：显示 #toc-wrapper 并重挂一次目录（清空旧 headings，杜绝"窜台"）。
