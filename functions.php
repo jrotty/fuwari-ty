@@ -124,9 +124,16 @@ if (!function_exists('themeInit')) {
                 echo json_encode(['ok' => false]);
                 exit;
             }
-            $data = (array)@$archive->fields->reactions;
+            $data = normalizeReactionCounts(@$archive->fields->reactions);
             $data[$emoji] = max(0, (int)($data[$emoji] ?? 0) + ($action === 'add' ? 1 : -1));
-            $archive->setField('reactions', 'json', $data, $cid);
+            // Widget_Archive 没有 setField（只在后台 EditTrait 里），直接写库。
+            // 存为 str 类型：Typecho 保存文章时对 str 原样透传，不会再叠加 json_encode 转义。
+            $json = str_replace("'", "''", json_encode($data, JSON_UNESCAPED_UNICODE));
+            $db = \Typecho\Db::get();
+            $db->query("INSERT INTO " . $db->getPrefix() . "fields (cid, name, type, str_value, int_value, float_value)
+                VALUES ($cid, 'reactions', 'str', '$json', 0, 0)
+                ON CONFLICT (cid, name)
+                DO UPDATE SET type = 'str', str_value = EXCLUDED.str_value");
             echo json_encode(['ok' => true, 'emoji' => $emoji, 'count' => $data[$emoji]]);
             exit;
         }
@@ -226,23 +233,49 @@ if (!function_exists('getOgImageUrl')) {
 }
 
 /* ---- 浏览量 ---- */
-// 存储于 typecho_fields 表（custom field）
-// themePostFields 的 views 输入框可后台手改；countViews 负责自动 +1。
+// 存储于 typecho_fields 表（custom field），type=int，后台"自定义字段"面板可直接改数值；
+// 每篇正文页渲染时 countViews 原子 +1（post.php 调用，post-meta 只读不增）。
+// 注意：前台是 Widget_Archive，既没有后台 EditTrait 的 incrIntField/setField，
+// 也不对外暴露 protected 的 db 属性（$archive->db 取到 null 曾导致自增静默失败），
+// 这里用 \Typecho\Db::get() 直连，原生 SQL 原子自增：字段不存在则建 int 类型并置 1，存在则 +1。
+// 防重复：前端 swup 会预取页面内所有站内链接（打开一篇文章时其它文章也被请求），
+// 用 cookie 记录同一浏览器 1 小时内已计数的文章，命中则不再 +1。
 if (!function_exists('getPostViews')) {
     function getPostViews($archive) {
         $v = @$archive->fields->views;
         return is_numeric($v) ? (int)$v : 0;
     }
 }
-/* 仅在首页索引循环里每篇调用一次（post.php 用 post-meta 里的 getPostViews，不再自增），
-   避免归档索引因每次渲染都 UPDATE 造成的 N+1。
-   浏览量存于 typecho_fields 表的 views 字段：incrIntField 自增，管理员可在后台 themePostFields 手改。 */
+if (!function_exists('fuwari_views_should_count')) {
+    function fuwari_views_should_count($cid) {
+        $now = time();
+        $seen = json_decode((string)($_COOKIE['fuwari_views'] ?? '{}'), true);
+        if (!is_array($seen)) $seen = [];
+        foreach ($seen as $k => $t) {
+            if ($now - (int)$t > 3600) unset($seen[$k]);
+        }
+        if (isset($seen[$cid])) return false;
+        if (count($seen) >= 100) {
+            asort($seen);
+            $seen = array_slice($seen, -50, null, true);
+        }
+        $seen[$cid] = $now;
+        @setcookie('fuwari_views', json_encode($seen), $now + 86400 * 30, '/', '', false, true);
+        return true;
+    }
+}
 if (!function_exists('countViews')) {
     function countViews($archive) {
         if (!defined('_fuwari_counted_')) {
             define('_fuwari_counted_', true);
             try {
-                $archive->incrIntField('views', 1, $archive->cid);
+                $cid = (int)$archive->cid;
+                if (!fuwari_views_should_count($cid)) return;
+                $db = \Typecho\Db::get();
+                $db->query("INSERT INTO " . $db->getPrefix() . "fields (cid, name, type, str_value, int_value, float_value)
+                    VALUES ($cid, 'views', 'int', NULL, 1, 0)
+                    ON CONFLICT (cid, name)
+                    DO UPDATE SET int_value = " . $db->getPrefix() . "fields.int_value + 1");
             } catch (\Throwable $e) {
                 // ignore
             }
@@ -282,10 +315,23 @@ if (!function_exists('getReactionDisplay')) {
         return ['type' => 'text', 'value' => $line];
     }
 }
+/* 读取端统一归一化：兼容 str 存储的 JSON 文本、面板手改的历史脏数据（多层转义逐层解码） */
+if (!function_exists('normalizeReactionCounts')) {
+    function normalizeReactionCounts($v) {
+        if (is_array($v)) return $v;
+        $v = (string)$v;
+        while (is_string($v)) {
+            $d = json_decode($v, true);
+            if (is_array($d)) return $d;
+            if (json_last_error() !== JSON_ERROR_NONE || !is_string($d)) return [];
+            $v = $d;
+        }
+        return [];
+    }
+}
 if (!function_exists('getReactionCounts')) {
     function getReactionCounts($archive) {
-        $v = @$archive->fields->reactions;
-        return is_array($v) ? $v : [];
+        return normalizeReactionCounts(@$archive->fields->reactions);
     }
 }
 
@@ -295,15 +341,24 @@ if (!function_exists('themePostFields')) {
         $Text = 'Typecho\Widget\Helper\Form\Element\Text';
         $cover = new $Text('cover', null, '', '封面图 URL', '留空则自动使用正文第一张图片，支持外链或相对路径');
         $layout->addItem($cover);
-        $views = new $Text('views', null, '', '浏览量', '');
-        $layout->addItem($views);
         $Checkbox = 'Typecho\Widget\Helper\Form\Element\Checkbox';
         $disable = new $Checkbox('reactionsDisable', ['1' => '在本页禁用表态'], [],
             'Reactions 表态', '勾选后此文章/页面不显示表态区');
+        // Checkbox 默认 name 是 fields[reactionsDisable][]（数组），保存时会被按 json 类型写入；
+        // 改成字符串 name，与手写字段 str 语义一致，读取端 !empty() 判断不受影响。
+        foreach ($disable->inputs as $_inp) {
+            $_inp->setAttribute('name', 'fields[reactionsDisable]');
+        }
         $layout->addItem($disable);
+        /* reactions 存于 str 自定义字段，后台面板可见可直接编辑 JSON；写库在 themeInit 的表态 AJAX 里 */
     }
 }
-
+/* 页面编辑页：同上，防止保存时面板删除 reactions 字段 */
+if (!function_exists('themePageFields')) {
+    function themePageFields($layout) {
+        themePostFields($layout);
+    }
+}
 /* ---- 后台主题配置面板 ---- */
 if (!function_exists('themeConfig')) {
     function themeConfig($form) {

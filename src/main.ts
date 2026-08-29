@@ -36,6 +36,7 @@ import PhotoSwipeLightbox from "photoswipe/lightbox";
 
 import { getHue, setHue } from "./utils/setting-utils";
 import { loadButtonScript } from "./widgets/navbar";
+import { initMermaid } from "./utils/mermaid";
 import { setClickOutsideToClose } from "./utils/base-utils";
 import dropdown from "./alpine-data/dropdown";
 import colorSchemeSwitcher from "./alpine-data/color-scheme-switcher";
@@ -200,6 +201,12 @@ function decorateCodeBlocks() {
 
     const code = pre.querySelector<HTMLElement>("code");
     if (!code) return;
+    if (
+      code.classList.contains("language-mermaid") ||
+      code.classList.contains("lang-mermaid")
+    ) {
+      return;
+    }
 
     // 语言标签：hljs 加的 language-X / lang-X
     const lang = (code.className.match(/(?:lang|language)-([^\s]+)/) || [])[1] || "";
@@ -481,6 +488,7 @@ function init() {
   loadHue();
   initCustomScrollbar();
   initNoteBlocks();
+  initMermaid();
   initCodeHighlight();
   initHeadingAnchors();
   showBanner();
@@ -490,6 +498,12 @@ function initCodeHighlight() {
   document.querySelectorAll(".custom-md pre code").forEach((block) => {
     if (!(block instanceof HTMLElement)) return;
     if (block.classList.contains("hljs")) return; // already highlighted
+    if (
+      block.classList.contains("language-mermaid") ||
+      block.classList.contains("lang-mermaid")
+    ) {
+      return;
+    }
     hljs.highlightElement(block);
   });
   document.querySelectorAll(".custom-md pre code").forEach((block) => {
@@ -537,6 +551,7 @@ const setup = () => {
     initCustomScrollbar();
     initNoteBlocks();
     initHeadingAnchors();
+    initMermaid();
     initCodeHighlight();
     loadButtonScript();
     updateToc();
